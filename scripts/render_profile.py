@@ -9,7 +9,7 @@ import re
 
 ROOT = Path(__file__).resolve().parents[1]
 ASSETS = ROOT / 'assets'
-BG, PANEL, INK, MUTED, LINE = '#0e1720', '#17242d', '#edf2e9', '#b0bec7', '#35464f'
+BG, PANEL, INK, MUTED, LINE = '#0d1523', '#17242d', '#f0eee4', '#a9b8cc', '#2c3b4e'
 MINT, GOLD, BLUE = '#b8efaa', '#efc780', '#8cbdd1'
 
 
@@ -53,18 +53,23 @@ def render(data):
     def nyan(x, y, width, height):
         frame = f'x="{x}" y="{y}" width="{width}" height="{height}" style="image-rendering:pixelated"'
         return f'<image class="nyan-live" {frame} href="data:image/gif;base64,{gif}"/><image class="nyan-still" {frame} href="data:image/png;base64,{poster}"/>'
-    hero = text(34, 72, "Umi's build lab.", 49, INK, 700)
-    hero += text(37, 113, 'Windows tools. AI bridges. Small obsessions.', 20, MUTED)
-    hero += pill(36, 164, 'Windows') + pill(139, 164, 'Local-first') + pill(270, 164, 'Public repos')
-    hero += rect(615, 22, 361, 209, PANEL, 12)
-    hero += '<path d="M637 47h5m309 0h5m-319 158h5m309 0h5" stroke="#8cbdd1" stroke-width="3" class="pulse"/>'
-    hero += nyan(630, 49, 329, 130)
-    hero += text(644, 211, 'NYAN CAT / FLIGHT DECK', 11, BLUE, 500)
+    def pixel(name, x, y, width, height):
+        live = base64.b64encode((ASSETS / (name + '.gif')).read_bytes()).decode()
+        still = base64.b64encode((ASSETS / (name + '-still.png')).read_bytes()).decode()
+        frame = f'x="{x}" y="{y}" width="{width}" height="{height}" style="image-rendering:pixelated"'
+        return f'<image class="nyan-live" {frame} href="data:image/gif;base64,{live}"/><image class="nyan-still" {frame} href="data:image/png;base64,{still}"/>'
+    hero = text(34, 97, "Hi, I'm Umi.", 58, INK, 700)
+    hero += text(37, 145, 'Windows tools. AI bridges.', 22, MUTED)
+    hero += text(37, 178, 'Small obsessions.', 22, MUTED)
+    hero += nyan(595, 90, 365, 145)
+    hero += pixel('pixel-planet', 861, 7, 95, 95)
+    hero += pixel('pixel-robot', 500, 176, 56, 56)
+    hero += '<path d="M578 45h3m-1-1v3m183 171h3m-1-1v3M958 159h3m-1-1v3" stroke="#8cbdd1" stroke-width="1.5"/>'
     hero += '<path d="M36 247h928" stroke="#35464f"/>'
     hero += text(36, 280, f"{data['public_repos']} public repos", 15, MINT, 600)
     hero += text(249, 280, f"{data['stars']} stars", 15, GOLD, 600)
     hero += text(404, 280, f"{len(data['languages'])} languages", 15, BLUE, 600)
-    hero += text(638, 280, '@TDUmii', 15, MUTED)
+    hero += text(638, 280, f"{data['contribution_total']} contributions", 15, MUTED)
     write('profile-hero.svg', 1000, 310, hero, "Umi's build lab: Windows tools, AI bridges and automation, with the original Nyan Cat")
 
     bridge = text(28, 44, 'UmiBridge', 27, INK, 650) + text(28, 86, 'MCP tools for your Windows desktop.', 16, MINT)
@@ -131,6 +136,7 @@ def render(data):
     write('calendar.svg', 1000, 170, calendar_body, 'Real public GitHub calendar; a decorative comet highlights only active dates')
     write('calendar-static.svg', 1000, 170, '<g transform="translate(0,-64)">' + cells + '</g>', 'Real public GitHub calendar, static reduced-motion edition')
     activity = text(28, 43, 'Commit orbit', 25, INK, 600)
+    activity += pixel('pixel-flame', 934, 247, 15, 20)
     activity += text(750, 42, f"{data['contribution_total']} contributions", 15, MINT, 500)
     activity += cells + sweep + '<path d="M28 215h944" stroke="#35464f"/>'
     for i, (value, desc) in enumerate([(data['active_days'], 'active days'), (data['recent_contributions'], 'in the last 30 days'), (data['best_day'], 'most in one day')]):
@@ -141,14 +147,15 @@ def render(data):
 
     # GitHub's two-column mobile table displays each 250px asset at ~140 CSS px.
     # Large, shorter labels are intentional; desktop assets remain unchanged.
-    mobile_hero = text(26, 54, "Umi's build lab.", 37, INK, 700)
+    mobile_hero = text(26, 64, "Hi, I'm Umi.", 46, INK, 700)
     mobile_hero += text(28, 94, 'Windows tools. AI bridges.', 23, MUTED)
-    mobile_hero += rect(20, 119, 460, 200, PANEL, 12)
+    mobile_hero += pixel('pixel-planet', 407, 10, 76, 76)
+    mobile_hero += pixel('pixel-robot', 398, 279, 48, 48)
     mobile_hero += nyan(45, 135, 410, 163)
     mobile_hero += text(28, 363, f"{data['public_repos']} public repos", 23, MINT, 600)
     mobile_hero += text(300, 363, f"{data['stars']} stars", 23, GOLD, 600)
     mobile_hero += text(28, 411, f"{len(data['languages'])} languages", 23, BLUE, 600)
-    mobile_hero += text(300, 411, '@TDUmii', 21, MUTED)
+    mobile_hero += text(245, 411, f"{data['contribution_total']} contributions", 19, MUTED)
     write('profile-hero-mobile.svg', 500, 444, mobile_hero, "Umi's build lab: Windows tools and AI bridges, with the original animated Nyan Cat")
 
     mb = text(17, 40, 'UmiBridge', 27, INK, 650)
@@ -179,6 +186,40 @@ def render(data):
         mt += text(17, y, name, 24, colors[i % len(colors)], 500) + text(212, y, count, 24, MUTED)
     write('toolkit-mobile.svg', 250, 350, mt, 'Primary programming language by public repository count, not a proficiency rating')
 
+    # Wide native rows keep the repository names and purpose readable on GitHub.
+    for slug, name, short_name, description, mobile_lines, color in [
+        ('bridge', 'UmiBridge', 'UmiBridge', 'Connect ChatGPT to Windows with MCP tools and a local dashboard.', ['ChatGPT meets Windows.', 'MCP tools. A local dashboard.'], MINT),
+        ('quietshare', 'QuietShare', 'QuietShare', 'Documents, presenter notes and optional offline transcription.', ['Documents. Presenter notes.', 'Optional offline transcription.'], BLUE),
+        ('automation', 'Background Automation Studio', 'Background Automation Studio', 'Record Windows actions, edit a timeline and replay a workflow.', ['Record Windows actions.', 'Edit a timeline. Replay a workflow.'], GOLD),
+    ]:
+        row = '<path d="M28 1h944" stroke="#35464f"/>'
+        row += text(30, 57, name, 29, INK, 650)
+        row += text(30, 96, description, 18, MUTED)
+        row += text(30, 133, 'Open repository', 14, color, 600)
+        row += f'<path d="M930 63l21-21m-21 0h21v21" fill="none" stroke="{color}" stroke-width="2"/>'
+        write('project-row-' + slug + '.svg', 1000, 160, row, name + ': ' + description + ' Open repository.')
+        mobile_row = '<path d="M22 1h456" stroke="#35464f"/>'
+        if slug == 'automation':
+            mobile_row += text(23, 42, 'Background Automation', 26, INK, 650) + text(23, 76, 'Studio', 26, INK, 650)
+            baseline = 113
+        else:
+            mobile_row += text(23, 49, short_name, 30, INK, 650)
+            baseline = 91
+        mobile_row += text(23, baseline, mobile_lines[0], 22, MUTED) + text(23, baseline + 32, mobile_lines[1], 22, MUTED)
+        mobile_row += text(23, baseline + 73, 'Open repository', 20, color, 600)
+        mobile_row += f'<path d="M440 53l17-17m-17 0h17v17" fill="none" stroke="{color}" stroke-width="2"/>'
+        write('project-row-' + slug + '-mobile.svg', 500, baseline + 99, mobile_row, name + ': ' + description + ' Open repository.')
+
+    compact_tools = text(29, 37, 'Toolkit', 20, INK, 600)
+    compact_tools += text(29, 69, 'Primary languages across public repositories', 13, MUTED)
+    compact_tools += text(29, 106, '   /   '.join(f'{name} {count}' for name, count in counts), 17, MINT, 500)
+    write('toolkit-compact.svg', 1000, 133, compact_tools, 'Primary language by repository count: ' + ', '.join(f'{name} {count}' for name, count in counts))
+    compact_mobile = text(23, 39, 'Toolkit', 27, INK, 600) + text(23, 72, 'Primary language per public repository', 18, MUTED)
+    for i, (name, count) in enumerate(counts):
+        x, y = 23 + (i % 2) * 240, 116 + (i // 2) * 37
+        compact_mobile += text(x, y, f'{name} {count}', 22, colors[i % len(colors)], 500)
+    write('toolkit-compact-mobile.svg', 500, 135 + ((len(counts) - 1) // 2) * 37, compact_mobile, 'Primary programming language by public repository count')
+
     recent_days = days[-182:]
     recent_start = date.fromisoformat(recent_days[0]['date'])
     mc = text(22, 41, 'Commit orbit', 27, INK, 600) + text(23, 76, 'Latest 26 weeks', 20, MUTED)
@@ -193,6 +234,7 @@ def render(data):
             month_seen.add((current.year, current.month))
     mc += commit_orbit(recent_days, recent_start, 26, 114, 17.3, 15.5, 445, 12, 12)
     mc += text(23, 259, f"{data['contribution_total']} contributions", 27, MINT, 600)
+    mc += pixel('pixel-flame', 454, 239, 15, 20)
     mc += text(23, 291, f"{data['active_days']} active days · full-year summary", 20, MUTED)
     mc += text(23, 325, data['date_label'], 17, MUTED)
     write('activity-mobile.svg', 500, 348, mc, 'Latest 26 weeks of real public contributions, with a full-year contribution and active-day total')
@@ -224,11 +266,17 @@ def render(data):
     mobile_credit += text(22, 74, 'Public snapshot · ' + data['date_label'], 19, MUTED)
     write('footer-credit-mobile.svg', 500, 97, mobile_credit, 'Nyan Cat artwork via GIPHY. Public GitHub snapshot: ' + data['date_label'])
 
-    readme = f'''<a href="https://tdumii.github.io/TDUmii/"><img src="assets/profile-hero.svg" alt="Umi's build lab. Windows tools, AI bridges and automation. Explore the full site." width="100%" /></a>
+    readme = f'''<a href="https://tdumii.github.io/TDUmii/"><img src="assets/profile-hero.svg" alt="Hi, I'm Umi. Windows tools. AI bridges. Small obsessions. Explore the full site." width="100%" /></a>
 
 ### Things I build
 
-<table><tr><td width="50%"><a href="https://github.com/TDUmii/umi-bridge"><img src="assets/project-bridge.svg" alt="UmiBridge: AI meets your Windows desktop, with MCP tools and a local dashboard." width="100%" /></a></td><td width="50%"><a href="https://github.com/TDUmii/QuietShare"><img src="assets/project-quietshare.svg" alt="QuietShare: documents, presenter notes and optional offline transcription." width="100%" /></a></td></tr><tr><td width="50%"><a href="https://github.com/TDUmii/BackgroundAutomationStudio"><img src="assets/project-automation.svg" alt="Background Automation Studio: record, edit and replay Windows workflows." width="100%" /></a></td><td width="50%"><img src="assets/toolkit.svg" alt="Primary programming languages by public repository count, not a skill score." width="100%" /></td></tr></table>
+<a href="https://github.com/TDUmii/umi-bridge"><img src="assets/project-row-bridge.svg" alt="UmiBridge: connect ChatGPT to Windows with MCP tools and a local dashboard. Open repository." width="100%" /></a>
+
+<a href="https://github.com/TDUmii/QuietShare"><img src="assets/project-row-quietshare.svg" alt="QuietShare: documents, presenter notes and optional offline transcription. Open repository." width="100%" /></a>
+
+<a href="https://github.com/TDUmii/BackgroundAutomationStudio"><img src="assets/project-row-automation.svg" alt="Background Automation Studio: record Windows actions, edit a timeline and replay a workflow. Open repository." width="100%" /></a>
+
+<img src="assets/toolkit-compact.svg" alt="Primary programming languages by public repository count, not a skill score." width="100%" />
 
 ![Umi's real public GitHub activity](assets/activity.svg)
 

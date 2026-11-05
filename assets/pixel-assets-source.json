@@ -1,0 +1,50 @@
+[
+  {
+    "file": "pixel-planet.gif",
+    "author": "Pixor",
+    "source": "https://pixor.art/library/scifi/sci-planet/",
+    "url": "https://pixor.art/library/files/sci-planet/sci-planet.gif",
+    "license": "CC0-1.0",
+    "bytes": 15749,
+    "sha256": "86aaa3afc595a2afdf2f171a8f2d04bf55b7fcf40c45193dac231c247367e4d5",
+    "size": [
+      192,
+      192
+    ],
+    "frames": 8,
+    "download_method": "direct HTTP",
+    "modified": false
+  },
+  {
+    "file": "pixel-robot.gif",
+    "author": "Pixor",
+    "source": "https://pixor.art/library/toys/toy-robot/",
+    "url": "https://pixor.art/library/files/toy-robot/toy-robot.gif",
+    "license": "CC0-1.0",
+    "bytes": 16034,
+    "sha256": "f76b193cd9957486f05dc9fc9ac278705b5a2234e56dee31d1468c73fa247b2a",
+    "size": [
+      192,
+      192
+    ],
+    "frames": 8,
+    "download_method": "direct HTTP",
+    "modified": false
+  },
+  {
+    "file": "pixel-flame.gif",
+    "author": "Spring Spring (Julie Damsgaard)",
+    "source": "https://opengameart.org/content/fire-0",
+    "url": "https://opengameart.org/sites/default/files/bluefire_0.gif",
+    "license": "CC0-1.0",
+    "bytes": 486,
+    "sha256": "5cc94fb828df58295c2de471abef0d2411e3acb5c3757b4b0a8286b68e1d4f74",
+    "size": [
+      15,
+      20
+    ],
+    "frames": 4,
+    "download_method": "direct HTTP",
+    "modified": false
+  }
+]

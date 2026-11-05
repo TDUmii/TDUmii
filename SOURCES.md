@@ -1,5 +1,8 @@
 # Sources
 
+- The additional pixel GIFs are downloaded originals, self-hosted with this profile. The [ringed planet](https://pixor.art/library/scifi/sci-planet/) and [tin toy robot](https://pixor.art/library/toys/toy-robot/) come from Pixor's CC0 library. The [blue flame](https://opengameart.org/content/fire-0) is by Spring Spring (Julie Damsgaard), CC0. `assets/pixel-assets-source.json` records the original download URLs, byte sizes and SHA-256 hashes. Static PNGs are first-frame motion fallbacks. No GIF frames, colors or timing were changed.
+- The current design is an open pixel night, with three directly linked project rows. The previous generated Workbench image was a rejected concept and is not used in the site or README.
+
 - The Nyan Cat GIF is the exact file requested by the user: [GIPHY source page](https://giphy.com/gifs/cat-pixel-art-nyan-7lsw8RenVcjCM). `assets/nyan-cat.gif` was downloaded directly over HTTP, unchanged. Its source metadata is retained in `assets/nyan-cat-source.json`. It is not original artwork by this project.
 - `assets/nyan-cat-still.png` is a first-frame accessibility fallback extracted from that GIF, used only when motion is paused or reduced.
 - Space Grotesk is self-hosted; its SIL Open Font License is included in `assets/Space-Grotesk-OFL.txt`.

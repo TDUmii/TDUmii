@@ -3,6 +3,7 @@ from pathlib import Path
 from urllib.parse import urlsplit, parse_qs
 from xml.etree import ElementTree as ET
 import hashlib
+import base64
 import json
 import re
 
@@ -52,4 +53,15 @@ for ref in re.findall(r'(?:src|srcset)="([^"]+)"', readme):
     assert parse_qs(url.query)['v'][0] == hashlib.sha256(path.read_bytes()).hexdigest()[:10]
     ET.parse(path)
 assert 'aoe' not in readme.lower()
+assert '<table' not in readme.lower(), 'The native profile must use readable full-width project rows'
+approved = ['nyan-cat', 'pixel-planet', 'pixel-robot']
+for variant in ['', '-mobile']:
+    hero = ET.parse(ROOT / f'assets/profile-hero{variant}.svg')
+    payloads = {base64.b64decode(node.attrib['href'].split(',', 1)[1]) for node in hero.findall('.//svg:image', NS) if node.attrib.get('href', '').startswith('data:image/gif;base64,')}
+    assert payloads == {(ROOT / f'assets/{name}.gif').read_bytes() for name in approved}, 'Native hero changed or lost an original GIF'
+for source in json.loads((ROOT / 'assets/pixel-assets-source.json').read_text()):
+    path = ROOT / 'assets' / source['file']
+    assert hashlib.sha256(path.read_bytes()).hexdigest() == source['sha256'], 'Downloaded GIF no longer matches its original'
+    assert path.stat().st_size == source['bytes'] and source['license'] == 'CC0-1.0'
 print('PASS: 202 packet positions, active-date orbit masks, static calendar, motion fallbacks, footer sizes and versioned README assets.')
+print('PASS: full-width native rows and exact original GIF payloads with recorded provenance.')

@@ -155,17 +155,17 @@ def render(data):
     mq += text(17, 317, 'Open project', 21, BLUE, 600)
     write('project-quietshare-mobile.svg', 250, 350, mq, 'QuietShare: presentations, notes and optional offline transcription. Open repository.')
 
-    ma = text(17, 36, 'Background', 22, INK, 650) + text(17, 67, 'Automation', 22, INK, 650) + text(17, 98, 'Studio', 22, INK, 650)
-    ma += text(17, 139, 'Windows', 23, GOLD) + text(17, 170, 'workflows.', 23, GOLD)
+    ma = text(17, 40, 'Automation', 26, INK, 650) + text(17, 75, 'Studio', 26, INK, 650)
+    ma += text(17, 127, 'Windows', 24, GOLD) + text(17, 160, 'workflows.', 24, GOLD)
     ma += rect(17, 197, 216, 69, '#34352b', 9)
     ma += text(30, 240, 'Record → Replay', 21, GOLD, 500)
     ma += text(17, 317, 'Open project', 21, GOLD, 600)
     write('project-automation-mobile.svg', 250, 350, ma, 'Background Automation Studio: record and replay Windows workflows. Open repository.')
 
-    mt = text(17, 39, 'The toolkit', 25, INK, 600) + text(17, 71, 'Public repo count', 16, MUTED)
+    mt = text(17, 39, 'The toolkit', 26, INK, 600) + text(17, 73, 'Public repo count', 18, MUTED)
     for i, (name, count) in enumerate(counts):
         y = 115 + i * 35
-        mt += text(17, y, name, 22, colors[i % len(colors)], 500) + text(212, y, count, 22, MUTED)
+        mt += text(17, y, name, 24, colors[i % len(colors)], 500) + text(212, y, count, 24, MUTED)
     write('toolkit-mobile.svg', 250, 350, mt, 'Primary programming language by public repository count, not a proficiency rating')
 
     recent_days = days[-182:]

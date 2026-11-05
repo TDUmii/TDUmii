@@ -1,6 +1,7 @@
 """Build one private HTML file from the same finished profile page."""
 from pathlib import Path
 import base64
+import hashlib
 import json
 import re
 
@@ -12,14 +13,23 @@ for path in (ROOT / 'assets').iterdir():
     if ext in MIME:
         assets['assets/' + path.name] = 'data:' + MIME[ext] + ';base64,' + base64.b64encode(path.read_bytes()).decode()
 html = (ROOT / 'index.html').read_text(encoding='utf-8')
+def version_asset(match):
+    attr, name = match[1], match[2]
+    path = ROOT / name
+    if not path.is_file():
+        return match[0]
+    version = hashlib.sha256(path.read_bytes()).hexdigest()[:10]
+    return attr + '="' + name + '?v=' + version + '"'
+html = re.sub(r'(src|srcset|href)="((?:assets/[^"?]+|styles\.css|profile\.js))(?:\?[^"\s]*)?"', version_asset, html)
+(ROOT / 'index.html').write_text(html, encoding='utf-8')
 css = (ROOT / 'styles.css').read_text(encoding='utf-8')
 css = re.sub(r"url\('([^']+)'\)", lambda match: "url('" + assets.get(match[1], match[1]) + "')", css)
-html = html.replace('<link rel="stylesheet" href="styles.css">', '<style>' + css + '</style>')
-html = re.sub(r'(src|srcset|href)="(assets/[^" ]+)"', lambda match: match[1] + '="' + assets.get(match[2], match[2]) + '"', html)
+html = re.sub(r'<link rel="stylesheet" href="styles\.css(?:\?[^"]*)?">', lambda match: '<style>' + css + '</style>', html)
+html = re.sub(r'(src|srcset|href)="(assets/[^"? ]+)(?:\?[^" ]*)?"', lambda match: match[1] + '="' + assets.get(match[2], match[2]) + '"', html)
 data = (ROOT / 'assets/profile-data.js').read_text(encoding='utf-8')
-html = html.replace('<script src="assets/profile-data.js"></script>', '<script>' + data + '</script>')
+html = re.sub(r'<script src="assets/profile-data\.js(?:\?[^"]*)?"></script>', lambda match: '<script>' + data + '</script>', html)
 code = 'window.UMI_ASSETS=' + json.dumps(assets).replace('<', '\\u003c') + ';\n' + (ROOT / 'profile.js').read_text(encoding='utf-8')
-html = html.replace('<script src="profile.js"></script>', '<script>' + code + '</script>')
+html = re.sub(r'<script src="profile\.js(?:\?[^"]*)?"></script>', lambda match: '<script>' + code + '</script>', html)
 out = ROOT / 'output'
 out.mkdir(exist_ok=True)
 (out / 'Umi-Profile.html').write_text(html, encoding='utf-8')

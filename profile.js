@@ -17,7 +17,7 @@ if(data){
  }));
 }
 const calendar=document.querySelector('.activity-scroll');
-function alignCalendar(){calendar.scrollLeft=calendar.scrollWidth;document.querySelector('.calendar-cue').hidden=calendar.scrollWidth<=calendar.clientWidth+1;}
+function alignCalendar(){calendar.scrollLeft=calendar.scrollWidth;const cue=document.querySelector('.calendar-cue');if(cue)cue.hidden=calendar.scrollWidth<=calendar.clientWidth+1;}
 requestAnimationFrame(alignCalendar);window.addEventListener('resize',alignCalendar,{passive:true});
 const image=document.getElementById('nyan-cat');
 const stage=document.querySelector('.cat-stage');

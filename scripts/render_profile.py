@@ -124,6 +124,63 @@ def render(data):
     activity += text(29, 284, f"Public GitHub snapshot · {data['date_label']}", 11, MUTED)
     write('activity.svg', 1000, 304, activity, 'Real public GitHub calendar and dated activity summary')
 
+    # GitHub's two-column mobile table displays each 250px asset at ~140 CSS px.
+    # Large, shorter labels are intentional; desktop assets remain unchanged.
+    mobile_hero = text(26, 54, "Umi's build lab.", 37, INK, 700)
+    mobile_hero += text(28, 94, 'Windows tools. AI bridges.', 23, MUTED)
+    mobile_hero += rect(20, 119, 460, 200, PANEL, 12)
+    mobile_hero += f'<image x="45" y="135" width="410" height="163" href="data:image/gif;base64,{gif}" style="image-rendering:pixelated"/>'
+    mobile_hero += text(28, 363, f"{data['public_repos']} public repos", 23, MINT, 600)
+    mobile_hero += text(300, 363, f"{data['stars']} stars", 23, GOLD, 600)
+    mobile_hero += text(28, 411, f"{len(data['languages'])} languages", 23, BLUE, 600)
+    mobile_hero += text(300, 411, '@TDUmii', 21, MUTED)
+    write('profile-hero-mobile.svg', 500, 444, mobile_hero, "Umi's build lab: Windows tools and AI bridges, with the original animated Nyan Cat")
+
+    mb = text(17, 40, 'UmiBridge', 27, INK, 650)
+    mb += text(17, 84, 'AI meets your', 22, MINT) + text(17, 116, 'Windows PC.', 22, MINT)
+    mb += rect(17, 153, 216, 113, '#21382a', 9)
+    mb += text(37, 192, 'ChatGPT', 24) + '<path d="M123 204v22m-6-6 6 6 6-6" stroke="#b8efaa" stroke-width="2" fill="none"/>'
+    mb += text(55, 253, 'MCP tools', 23, MINT, 500)
+    mb += text(17, 317, 'Open project', 21, MINT, 600)
+    write('project-bridge-mobile.svg', 250, 350, mb, 'UmiBridge: connect AI to Windows with MCP tools. Open repository.')
+
+    mq = text(17, 40, 'QuietShare', 26, INK, 650)
+    mq += text(17, 84, 'Presentations.', 22, BLUE) + text(17, 116, 'Notes. Offline.', 22, BLUE)
+    mq += rect(17, 153, 216, 113, '#253744', 9)
+    mq += text(32, 187, 'Your notes', 24, BLUE, 500) + '<path d="M33 205h182m-182 16h153m-153 16h169" stroke="#63869a" stroke-width="5"/>'
+    mq += text(17, 317, 'Open project', 21, BLUE, 600)
+    write('project-quietshare-mobile.svg', 250, 350, mq, 'QuietShare: presentations, notes and optional offline transcription. Open repository.')
+
+    ma = text(17, 36, 'Background', 22, INK, 650) + text(17, 67, 'Automation', 22, INK, 650) + text(17, 98, 'Studio', 22, INK, 650)
+    ma += text(17, 139, 'Windows', 23, GOLD) + text(17, 170, 'workflows.', 23, GOLD)
+    ma += rect(17, 197, 216, 69, '#34352b', 9)
+    ma += text(30, 240, 'Record → Replay', 21, GOLD, 500)
+    ma += text(17, 317, 'Open project', 21, GOLD, 600)
+    write('project-automation-mobile.svg', 250, 350, ma, 'Background Automation Studio: record and replay Windows workflows. Open repository.')
+
+    mt = text(17, 39, 'The toolkit', 25, INK, 600) + text(17, 71, 'Public repo count', 16, MUTED)
+    for i, (name, count) in enumerate(counts):
+        y = 115 + i * 35
+        mt += text(17, y, name, 22, colors[i % len(colors)], 500) + text(212, y, count, 22, MUTED)
+    write('toolkit-mobile.svg', 250, 350, mt, 'Primary programming language by public repository count, not a proficiency rating')
+
+    recent_days = days[-182:]
+    recent_start = date.fromisoformat(recent_days[0]['date'])
+    mc = text(22, 41, 'One day at a time.', 27, INK, 600) + text(23, 76, 'Latest 26 weeks shown', 20, MUTED)
+    month_seen = set()
+    for day in recent_days:
+        current = date.fromisoformat(day['date'])
+        column, row = divmod((current - recent_start).days, 7)
+        x, y = 26 + column * 17.3, 114 + row * 15.5
+        mc += f'<rect x="{x:.1f}" y="{y:.1f}" width="12" height="12" rx="2" fill="{palette[day["level"]]}"><title>{current.isoformat()}: {day["count"]} contributions</title></rect>'
+        if (current.year, current.month) not in month_seen:
+            mc += text(x, 101, current.strftime('%b'), 12, MUTED)
+            month_seen.add((current.year, current.month))
+    mc += text(23, 259, f"{data['contribution_total']} contributions", 27, MINT, 600)
+    mc += text(23, 291, f"{data['active_days']} active days · full-year summary", 20, MUTED)
+    mc += text(23, 325, data['date_label'], 17, MUTED)
+    write('activity-mobile.svg', 500, 348, mc, 'Latest 26 weeks of real public contributions, with a full-year contribution and active-day total')
+
     readme = f'''<a href="https://tdumii.github.io/TDUmii/"><img src="assets/profile-hero.svg" alt="Umi's build lab. Windows tools, AI bridges and automation. Explore the full site." width="100%" /></a>
 
 ### Things I build
@@ -136,7 +193,13 @@ def render(data):
 
 <sub>Public data · {data['date_label']}. Nyan Cat via <a href="https://giphy.com/gifs/cat-pixel-art-nyan-7lsw8RenVcjCM">GIPHY</a>.</sub>
 '''
-    readme = re.sub(r'src="assets/([^"?]+)"', lambda match: 'src="assets/' + match[1] + '?v=' + hashlib.sha256((ASSETS / match[1]).read_bytes()).hexdigest()[:10] + '"', readme)
+    def responsive(match):
+        name, alt = match[1], match[2]
+        mobile = name.removesuffix('.svg') + '-mobile.svg'
+        return '<picture><source media="(max-width: 600px)" srcset="assets/' + mobile + '" /><img src="assets/' + name + '" alt="' + alt + '" width="100%" /></picture>'
+    readme = re.sub(r'<img src="assets/([^"]+\.svg)" alt="([^"]*)" width="100%" />', responsive, readme)
+    readme = readme.replace("![Umi's real public GitHub activity](assets/activity.svg)", '<picture><source media="(max-width: 600px)" srcset="assets/activity-mobile.svg" /><img src="assets/activity.svg" alt="Real public GitHub activity; recent 26 weeks shown on mobile with full-year totals" width="100%" /></picture>')
+    readme = re.sub(r'(src|srcset)="assets/([^"?]+)"', lambda match: match[1] + '="assets/' + match[2] + '?v=' + hashlib.sha256((ASSETS / match[2]).read_bytes()).hexdigest()[:10] + '"', readme)
     (ROOT / 'README.md').write_text(readme, encoding='utf-8')
 
 

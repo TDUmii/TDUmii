@@ -19,6 +19,11 @@ if(data){
 const calendar=document.querySelector('.activity-scroll');
 function alignCalendar(){calendar.scrollLeft=calendar.scrollWidth;const cue=document.querySelector('.calendar-cue');if(cue)cue.hidden=calendar.scrollWidth<=calendar.clientWidth+1;}
 requestAnimationFrame(alignCalendar);window.addEventListener('resize',alignCalendar,{passive:true});
+const calendarImage=document.querySelector('.activity-image');
+const calendarLive=calendarImage.dataset.liveSrc||asset('assets/calendar.svg');
+const calendarStill=calendarImage.dataset.stillSrc||asset('assets/calendar-static.svg');
+let calendarVisible=true;
+function updateCalendarMotion(){const stop=userPaused||reduce.matches||document.hidden||!calendarVisible;const next=stop?calendarStill:calendarLive;if(calendarImage.getAttribute('src')!==next)calendarImage.src=next;}
 const image=document.getElementById('nyan-cat');
 const stage=document.querySelector('.cat-stage');
 const toggle=document.querySelector('.motion-toggle');
@@ -46,11 +51,12 @@ function updateMotion(){
  if(shouldRun&&!canvasRunning){canvasRunning=true;lastFrame=0;frameId=requestAnimationFrame(tick);}
  else if(!shouldRun){canvasRunning=false;cancelAnimationFrame(frameId);draw(0);}
  document.querySelectorAll('.flight-path svg').forEach(svg=>{if(stopGif)svg.pauseAnimations();else svg.unpauseAnimations();});
+ updateCalendarMotion();
 }
 toggle.addEventListener('click',()=>{if(reduce.matches)return;userPaused=!userPaused;updateMotion();});
 reduce.addEventListener('change',updateMotion);document.addEventListener('visibilitychange',updateMotion);
 if('IntersectionObserver'in window){
- const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{entry.target.classList.toggle('motion-offscreen',!entry.isIntersecting);if(entry.target===stage){visible=entry.isIntersecting;updateMotion();}}),{threshold:.03});
- [stage,...document.querySelectorAll('.bridge-visual,.display-diagram,.timeline-diagram')].forEach(node=>observer.observe(node));
+ const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{entry.target.classList.toggle('motion-offscreen',!entry.isIntersecting);if(entry.target===stage){visible=entry.isIntersecting;updateMotion();}if(entry.target===calendar){calendarVisible=entry.isIntersecting;updateCalendarMotion();}}),{threshold:.03});
+ [stage,calendar,...document.querySelectorAll('.bridge-visual,.display-diagram,.timeline-diagram')].forEach(node=>observer.observe(node));
 }
 window.addEventListener('resize',sizeCanvas,{passive:true});sizeCanvas();updateMotion();

@@ -3,6 +3,7 @@ from pathlib import Path
 from urllib.parse import urlsplit, parse_qs
 from xml.etree import ElementTree as ET
 import hashlib
+import json
 import re
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -23,6 +24,16 @@ for packet in bridge.findall('.//svg:circle', NS):
         assert not any(x + radius > nx and x - radius < nx + w and y + radius > ny and y - radius < ny + h for nx, ny, w, h in nodes), 'Animated packet crosses a node'
     packet_count += 1
 assert packet_count == 2
+data = json.loads((ROOT / 'assets/profile-data.json').read_text())
+for filename, compact in [('activity.svg', False), ('calendar.svg', False), ('activity-mobile.svg', True)]:
+    calendar = ET.parse(ROOT / 'assets' / filename)
+    mask = calendar.find('.//svg:mask[@id="orbit-active"]', NS)
+    assert mask is not None and mask.attrib['maskUnits'] == 'userSpaceOnUse'
+    days = data['contributions'][-182:] if compact else data['contributions']
+    assert len(mask.findall('svg:rect', NS)) == sum(day['count'] > 0 for day in days), 'Calendar glow may highlight inactive dates'
+    assert calendar.find('.//svg:g[@class="orbit-motion"]', NS) is not None
+    assert '@media(prefers-reduced-motion:reduce){.orbit-motion{display:none}}' in (ROOT / 'assets' / filename).read_text()
+assert 'orbit-motion' not in (ROOT / 'assets/calendar-static.svg').read_text(), 'Static calendar must have no orbit sweep'
 for variant in ['', '-mobile']:
     source = (ROOT / f'assets/profile-hero{variant}.svg').read_text(encoding='utf-8')
     assert 'class="nyan-live"' in source and 'class="nyan-still"' in source
@@ -41,4 +52,4 @@ for ref in re.findall(r'(?:src|srcset)="([^"]+)"', readme):
     assert parse_qs(url.query)['v'][0] == hashlib.sha256(path.read_bytes()).hexdigest()[:10]
     ET.parse(path)
 assert 'aoe' not in readme.lower()
-print('PASS: 202 packet positions, two motion fallbacks, four footer sizes, and all versioned README assets.')
+print('PASS: 202 packet positions, active-date orbit masks, static calendar, motion fallbacks, footer sizes and versioned README assets.')

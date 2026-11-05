@@ -35,6 +35,18 @@ def write(name, w, h, body, title):
     (ASSETS / name).write_text(shell(w, h, body, title), encoding='utf-8')
 
 
+def commit_orbit(days, start, x0, y0, dx, dy, width, cell=12, height=11):
+    """Decorative sweep, clipped strictly to the real calendar's active cells."""
+    marks = []
+    for day in days:
+        if day['count'] <= 0:
+            continue
+        column, row = divmod((date.fromisoformat(day['date']) - start).days, 7)
+        marks.append(rect(round(x0 + column * dx, 2), round(y0 + row * dy, 2), cell, height, '#fff', 2))
+    grid_h = dy * 6 + height
+    return f'''<defs><mask id="orbit-active" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse" x="{x0}" y="{y0}" width="{width}" height="{grid_h}">{''.join(marks)}</mask><linearGradient id="orbit-light"><stop offset="0" stop-color="{MINT}" stop-opacity="0"/><stop offset=".72" stop-color="{MINT}" stop-opacity=".16"/><stop offset="1" stop-color="{GOLD}" stop-opacity=".42"/></linearGradient></defs><style>@media(prefers-reduced-motion:reduce){{.orbit-motion{{display:none}}}}</style><g class="orbit-motion" aria-hidden="true" pointer-events="none"><g mask="url(#orbit-active)"><rect x="-125" y="{y0}" width="145" height="{grid_h}" fill="url(#orbit-light)"><animateTransform attributeName="transform" type="translate" values="{x0 - 35} 0;{x0 + width + 130} 0" dur="9s" begin="-6.4s" repeatCount="indefinite"/></rect></g><g transform="translate({x0} {y0 - 8})"><animateTransform attributeName="transform" type="translate" values="{x0 - 35} {y0 - 8};{x0 + width + 130} {y0 - 8}" dur="9s" begin="-6.4s" repeatCount="indefinite"/><path d="M-1-4h2v3h3v2H1v3h-2V1h-3v-2h3z" fill="{GOLD}"/>{''.join(rect(-10-i*10, -1, max(2, 6-i*.6), 2, MINT, 0)[:-2] + f' opacity="{.6-i*.07}"/>' for i in range(6))}</g></g>'''
+
+
 def render(data):
     gif = base64.b64encode((ASSETS / 'nyan-cat.gif').read_bytes()).decode()
     poster = base64.b64encode((ASSETS / 'nyan-cat-still.png').read_bytes()).decode()
@@ -43,8 +55,7 @@ def render(data):
         return f'<image class="nyan-live" {frame} href="data:image/gif;base64,{gif}"/><image class="nyan-still" {frame} href="data:image/png;base64,{poster}"/>'
     hero = text(34, 72, "Umi's build lab.", 49, INK, 700)
     hero += text(37, 113, 'Windows tools. AI bridges. Small obsessions.', 20, MUTED)
-    hero += text(37, 151, 'I build things that make a desktop more useful.', 16, MUTED)
-    hero += pill(36, 185, 'Windows') + pill(139, 185, 'Local-first') + pill(270, 185, 'Public repos')
+    hero += pill(36, 164, 'Windows') + pill(139, 164, 'Local-first') + pill(270, 164, 'Public repos')
     hero += rect(615, 22, 361, 209, PANEL, 12)
     hero += '<path d="M637 47h5m309 0h5m-319 158h5m309 0h5" stroke="#8cbdd1" stroke-width="3" class="pulse"/>'
     hero += nyan(630, 49, 329, 130)
@@ -56,8 +67,7 @@ def render(data):
     hero += text(638, 280, '@TDUmii', 15, MUTED)
     write('profile-hero.svg', 1000, 310, hero, "Umi's build lab: Windows tools, AI bridges and automation, with the original Nyan Cat")
 
-    bridge = text(28, 44, 'UmiBridge', 27, INK, 650) + text(28, 75, 'AI meets your Windows desktop.', 16, MINT)
-    bridge += text(28, 112, 'MCP tools, files, terminals and a local dashboard.', 13, MUTED)
+    bridge = text(28, 44, 'UmiBridge', 27, INK, 650) + text(28, 86, 'MCP tools for your Windows desktop.', 16, MINT)
     bridge += '<g id="connection-layer" fill="none" stroke="#6e9c80" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M149 178H190m-5-4 5 4-5 4M334 178H377m-5-4 5 4-5 4"/></g>'
     bridge += '<g id="connection-packets" class="moving"><circle id="bridge-packet-in" r="2.5" fill="#b8efaa"><animateMotion dur="2.4s" repeatCount="indefinite" path="M151 178H183"/></circle><circle id="bridge-packet-out" r="2.5" fill="#b8efaa"><animateMotion dur="2.4s" repeatCount="indefinite" path="M337 178H370"/></circle></g>'
     bridge += rect(29, 150, 115, 57, '#23363b', 8) + text(45, 184, 'ChatGPT', 16)
@@ -67,8 +77,7 @@ def render(data):
     bridge += text(28, 306, 'Explore the repository', 13, MINT, 600)
     write('project-bridge.svg', 500, 334, bridge, 'UmiBridge: ChatGPT to Windows over MCP, with a local dashboard and desktop tools')
 
-    quiet = text(28, 44, 'QuietShare', 27, INK, 650) + text(28, 75, 'Your notes stay on your side.', 16, BLUE)
-    quiet += text(28, 112, 'Documents, presenter notes and offline transcripts.', 13, MUTED)
+    quiet = text(28, 44, 'QuietShare', 27, INK, 650) + text(28, 86, 'Presentations, notes and offline transcripts.', 15, BLUE)
     quiet += rect(30, 141, 175, 94, '#253744', 8) + rect(41, 152, 153, 62, '#17242d', 4)
     quiet += text(55, 176, 'Presenter', 14, BLUE, 500) + '<path d="M56 191h97m-97 9h74" stroke="#607d8e" stroke-width="3"/>'
     quiet += rect(300, 141, 167, 94, '#253744', 8) + rect(311, 152, 145, 62, '#17242d', 4)
@@ -79,8 +88,7 @@ def render(data):
     write('project-quietshare.svg', 500, 334, quiet, 'QuietShare: presentation companion with documents, notes and optional offline transcription')
 
     studio = text(28, 44, 'Background Automation Studio', 25, INK, 650)
-    studio += text(28, 77, 'Turn repetitive work into a workflow.', 16, GOLD)
-    studio += text(28, 112, 'Record, arrange and replay Windows actions.', 13, MUTED)
+    studio += text(28, 86, 'Record and replay Windows workflows.', 16, GOLD)
     studio += '<path d="M54 170H449" stroke="#4d5146" stroke-width="2"/>'
     for i, (name, color) in enumerate([('Record', GOLD), ('Edit', BLUE), ('Replay', MINT)]):
         x = 30 + i * 151
@@ -118,10 +126,13 @@ def render(data):
         if month not in months:
             cells += text(x, 84, current.strftime('%b'), 11, MUTED)
             months.add(month)
-    write('calendar.svg', 1000, 170, '<g transform="translate(0,-64)">' + cells + '</g>', 'Real public GitHub calendar; every cell has a date and contribution count')
-    activity = text(28, 43, 'Built one day at a time.', 25, INK, 600)
+    sweep = commit_orbit(days, start, 32, 101, 17.8, 14.2, 943)
+    calendar_body = '<g transform="translate(0,-64)">' + cells + sweep + '</g>'
+    write('calendar.svg', 1000, 170, calendar_body, 'Real public GitHub calendar; a decorative comet highlights only active dates')
+    write('calendar-static.svg', 1000, 170, '<g transform="translate(0,-64)">' + cells + '</g>', 'Real public GitHub calendar, static reduced-motion edition')
+    activity = text(28, 43, 'Commit orbit', 25, INK, 600)
     activity += text(750, 42, f"{data['contribution_total']} contributions", 15, MINT, 500)
-    activity += cells + '<path d="M28 215h944" stroke="#35464f"/>'
+    activity += cells + sweep + '<path d="M28 215h944" stroke="#35464f"/>'
     for i, (value, desc) in enumerate([(data['active_days'], 'active days'), (data['recent_contributions'], 'in the last 30 days'), (data['best_day'], 'most in one day')]):
         x = 30 + i * 318
         activity += text(x, 250, value, 25, MINT, 600) + text(x + 72, 248, desc, 12, MUTED)
@@ -170,7 +181,7 @@ def render(data):
 
     recent_days = days[-182:]
     recent_start = date.fromisoformat(recent_days[0]['date'])
-    mc = text(22, 41, 'One day at a time.', 27, INK, 600) + text(23, 76, 'Latest 26 weeks shown', 20, MUTED)
+    mc = text(22, 41, 'Commit orbit', 27, INK, 600) + text(23, 76, 'Latest 26 weeks', 20, MUTED)
     month_seen = set()
     for day in recent_days:
         current = date.fromisoformat(day['date'])
@@ -180,6 +191,7 @@ def render(data):
         if (current.year, current.month) not in month_seen:
             mc += text(x, 101, current.strftime('%b'), 12, MUTED)
             month_seen.add((current.year, current.month))
+    mc += commit_orbit(recent_days, recent_start, 26, 114, 17.3, 15.5, 445, 12, 12)
     mc += text(23, 259, f"{data['contribution_total']} contributions", 27, MINT, 600)
     mc += text(23, 291, f"{data['active_days']} active days · full-year summary", 20, MUTED)
     mc += text(23, 325, data['date_label'], 17, MUTED)

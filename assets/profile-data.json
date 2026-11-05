@@ -12,7 +12,18 @@
     "C#",
     "TypeScript"
   ],
-  "contribution_total": 461,
+  "language_counts": {
+    "Python": 2,
+    "C++": 2,
+    "JavaScript": 2,
+    "HTML": 1,
+    "C#": 5,
+    "TypeScript": 1
+  },
+  "active_days": 56,
+  "recent_contributions": 224,
+  "best_day": 51,
+  "contribution_total": 463,
   "contributions": [
     {
       "date": "2025-11-02",
@@ -1857,24 +1868,33 @@
     {
       "date": "2026-11-05",
       "level": 2,
-      "count": 21
+      "count": 23
     }
   ],
   "projects": [
     {
       "name": "umi-bridge",
       "html_url": "https://github.com/TDUmii/umi-bridge",
-      "language": "HTML"
+      "language": "HTML",
+      "description": "UmiBridge Sakura Console: Windows MCP bridge for ChatGPT, with a private local dashboard, persistent connection and one-click setup.",
+      "stargazers_count": 2,
+      "updated_at": "2026-11-04T12:18:34Z"
     },
     {
       "name": "QuietShare",
       "html_url": "https://github.com/TDUmii/QuietShare",
-      "language": "C++"
+      "language": "C++",
+      "description": null,
+      "stargazers_count": 0,
+      "updated_at": "2026-11-05T01:12:56Z"
     },
     {
-      "name": "aoe-web-browser-vn",
-      "html_url": "https://github.com/TDUmii/aoe-web-browser-vn",
-      "language": "JavaScript"
+      "name": "BackgroundAutomationStudio",
+      "html_url": "https://github.com/TDUmii/BackgroundAutomationStudio",
+      "language": "C#",
+      "description": "Windows desktop automation studio with virtual background input, UI Automation, Win32 compatibility, recording, hotkeys, and English/Vietnamese UI.",
+      "stargazers_count": 1,
+      "updated_at": "2026-09-23T10:23:17Z"
     }
   ],
   "sources": [

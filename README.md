@@ -1,22 +1,11 @@
-<div align="center">
-<h1>Hi, I'm Umi.</h1>
-<p>Building useful little things.</p>
-<p><a href="https://tdumii.github.io/TDUmii/">Website</a></p>
-<img src="assets/nyan-cat.gif" alt="Nyan Cat flying with a rainbow trail" width="500" />
-</div>
+<a href="https://tdumii.github.io/TDUmii/"><img src="assets/profile-hero.svg" alt="Umi's build lab. Windows tools, AI bridges and automation. Explore the full site." width="100%" /></a>
 
-![Public GitHub statistics](assets/stats.svg)
+### Things I build
 
-### Loadout
+<table><tr><td width="50%"><a href="https://github.com/TDUmii/umi-bridge"><img src="assets/project-bridge.svg" alt="UmiBridge: AI meets your Windows desktop, with MCP tools and a local dashboard." width="100%" /></a></td><td width="50%"><a href="https://github.com/TDUmii/QuietShare"><img src="assets/project-quietshare.svg" alt="QuietShare: documents, presenter notes and optional offline transcription." width="100%" /></a></td></tr><tr><td width="50%"><a href="https://github.com/TDUmii/BackgroundAutomationStudio"><img src="assets/project-automation.svg" alt="Background Automation Studio: record, edit and replay Windows workflows." width="100%" /></a></td><td width="50%"><img src="assets/toolkit.svg" alt="Primary programming languages by public repository count, not a skill score." width="100%" /></td></tr></table>
 
-![Repository languages: Python, C++, JavaScript, HTML, C#, TypeScript](assets/languages.svg)
+![Umi's real public GitHub activity](assets/activity.svg)
 
-### Activity
+<p align="center"><a href="https://tdumii.github.io/TDUmii/">Explore the build lab</a> · <a href="https://github.com/TDUmii?tab=repositories">All repositories</a></p>
 
-![Real public GitHub contribution calendar](assets/activity.svg)
-
-### Selected projects
-
-[UmiBridge](https://github.com/TDUmii/umi-bridge) · [QuietShare](https://github.com/TDUmii/QuietShare) · [AOE Web VN](https://github.com/TDUmii/aoe-web-browser-vn)
-
-<sub>Public GitHub snapshot · Nov 5, 2026. Nyan Cat via [GIPHY](https://giphy.com/gifs/cat-pixel-art-nyan-7lsw8RenVcjCM).</sub>
+<sub>Public data · Nov 5, 2026. Nyan Cat via <a href="https://giphy.com/gifs/cat-pixel-art-nyan-7lsw8RenVcjCM">GIPHY</a>.</sub>

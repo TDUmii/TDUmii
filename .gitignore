@@ -1,0 +1,13 @@
+output/
+.playwright-cli/
+.impeccable/review/
+contributions-source.html
+__pycache__/
+
+/PRODUCT.md
+/DESIGN.md
+/.impeccable/
+/qa.cjs
+/capture.cjs
+/PROFILE-STATUS.md
+/assets/contributions.json

@@ -230,7 +230,9 @@ def render(data):
         return '<picture><source media="(max-width: 600px)" srcset="assets/' + mobile + '" /><img src="assets/' + name + '" alt="' + alt + '" width="100%" /></picture>'
     readme = re.sub(r'<img src="assets/([^"]+\.svg)" alt="([^"]*)" width="100%" />', responsive, readme)
     readme = readme.replace("![Umi's real public GitHub activity](assets/activity.svg)", '<picture><source media="(max-width: 600px)" srcset="assets/activity-mobile.svg" /><img src="assets/activity.svg" alt="Real public GitHub activity; recent 26 weeks shown on mobile with full-year totals" width="100%" /></picture>')
-    readme = re.sub(r'(src|srcset)="assets/([^"?]+)"', lambda match: match[1] + '="assets/' + match[2] + '?v=' + hashlib.sha256((ASSETS / match[2]).read_bytes()).hexdigest()[:10] + '"', readme)
+    # github.com/.../raw redirects drop query strings, defeating cache versions.
+    # Link directly to the raw host so each content hash remains in the request.
+    readme = re.sub(r'(src|srcset)="assets/([^"?]+)"', lambda match: match[1] + '="https://raw.githubusercontent.com/TDUmii/TDUmii/main/assets/' + match[2] + '?v=' + hashlib.sha256((ASSETS / match[2]).read_bytes()).hexdigest()[:10] + '"', readme)
     (ROOT / 'README.md').write_text(readme, encoding='utf-8')
 
 

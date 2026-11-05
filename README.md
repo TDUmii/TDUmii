@@ -6,6 +6,6 @@
 
 <picture><source media="(max-width: 600px)" srcset="assets/activity-mobile.svg?v=a7827c20d4" /><img src="assets/activity.svg?v=aeae4a3bda" alt="Real public GitHub activity; recent 26 weeks shown on mobile with full-year totals" width="100%" /></picture>
 
-<p align="center"><a href="https://tdumii.github.io/TDUmii/">Explore the build lab</a> · <a href="https://github.com/TDUmii?tab=repositories">All repositories</a></p>
+<p align="center"><a href="https://tdumii.github.io/TDUmii/"><picture><source media="(max-width: 600px)" srcset="assets/footer-lab-mobile.svg?v=c87272a09d" /><img src="assets/footer-lab.svg?v=bd4e37e680" alt="Explore Umi's build lab website" width="49%" /></picture></a> <a href="https://github.com/TDUmii?tab=repositories"><picture><source media="(max-width: 600px)" srcset="assets/footer-code-mobile.svg?v=3318b9eaac" /><img src="assets/footer-code.svg?v=86368c49a6" alt="Browse all of Umi's public repositories" width="49%" /></picture></a></p>
 
-<sub>Public data · Nov 5, 2026. Nyan Cat via <a href="https://giphy.com/gifs/cat-pixel-art-nyan-7lsw8RenVcjCM">GIPHY</a>.</sub>
+<a href="https://giphy.com/gifs/cat-pixel-art-nyan-7lsw8RenVcjCM"><picture><source media="(max-width: 600px)" srcset="assets/footer-credit-mobile.svg?v=57d4afacee" /><img src="assets/footer-credit.svg?v=056a2f56c7" alt="Original Nyan Cat artwork via GIPHY. Public snapshot: Nov 5, 2026." width="100%" /></picture></a>

@@ -181,6 +181,33 @@ def render(data):
     mc += text(23, 325, data['date_label'], 17, MUTED)
     write('activity-mobile.svg', 500, 348, mc, 'Latest 26 weeks of real public contributions, with a full-year contribution and active-day total')
 
+    # Native README links inherit GitHub's blue link styling. Keep the closing
+    # navigation in the same visual family as the profile artwork instead.
+    def footer_tile(name, label, mobile_lines, primary):
+        fill, ink = (MINT, '#18291c') if primary else (PANEL, INK)
+        desktop = rect(0, 0, 500, 108, fill, 12)
+        desktop += text(27, 65, label, 26, ink, 600)
+        desktop += f'<path d="M438 67l25-25m-25 0h25v25" fill="none" stroke="{ink}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>'
+        write(name + '.svg', 500, 108, desktop, label)
+        mobile = rect(0, 0, 250, 148, fill, 12)
+        mobile += text(20, 55, mobile_lines[0], 27, ink, 600)
+        mobile += text(20, 92, mobile_lines[1], 27, ink, 600)
+        mobile += f'<path d="M201 125l19-19m-19 0h19v19" fill="none" stroke="{ink}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>'
+        write(name + '-mobile.svg', 250, 148, mobile, label)
+
+    footer_tile('footer-lab', 'Explore the lab', ('Explore', 'the lab'), True)
+    footer_tile('footer-code', 'All repositories', ('Browse', 'the code'), False)
+    credit = '<path d="M20 1h960" stroke="#35464f"/>'
+    credit += text(23, 36, 'Nyan Cat via GIPHY', 15, BLUE)
+    credit += '<path d="M206 34l11-11m-11 0h11v11" fill="none" stroke="#8cbdd1" stroke-width="1.5"/>'
+    credit += text(657, 36, 'Public snapshot · ' + data['date_label'], 13, MUTED)
+    write('footer-credit.svg', 1000, 58, credit, 'Nyan Cat artwork via GIPHY. Public GitHub snapshot: ' + data['date_label'])
+    mobile_credit = '<path d="M20 1h460" stroke="#35464f"/>'
+    mobile_credit += text(22, 37, 'Nyan Cat via GIPHY', 21, BLUE)
+    mobile_credit += '<path d="M281 35l13-13m-13 0h13v13" fill="none" stroke="#8cbdd1" stroke-width="2"/>'
+    mobile_credit += text(22, 74, 'Public snapshot · ' + data['date_label'], 19, MUTED)
+    write('footer-credit-mobile.svg', 500, 97, mobile_credit, 'Nyan Cat artwork via GIPHY. Public GitHub snapshot: ' + data['date_label'])
+
     readme = f'''<a href="https://tdumii.github.io/TDUmii/"><img src="assets/profile-hero.svg" alt="Umi's build lab. Windows tools, AI bridges and automation. Explore the full site." width="100%" /></a>
 
 ### Things I build
@@ -189,9 +216,9 @@ def render(data):
 
 ![Umi's real public GitHub activity](assets/activity.svg)
 
-<p align="center"><a href="https://tdumii.github.io/TDUmii/">Explore the build lab</a> · <a href="https://github.com/TDUmii?tab=repositories">All repositories</a></p>
+<p align="center"><a href="https://tdumii.github.io/TDUmii/"><picture><source media="(max-width: 600px)" srcset="assets/footer-lab-mobile.svg" /><img src="assets/footer-lab.svg" alt="Explore Umi's build lab website" width="49%" /></picture></a> <a href="https://github.com/TDUmii?tab=repositories"><picture><source media="(max-width: 600px)" srcset="assets/footer-code-mobile.svg" /><img src="assets/footer-code.svg" alt="Browse all of Umi's public repositories" width="49%" /></picture></a></p>
 
-<sub>Public data · {data['date_label']}. Nyan Cat via <a href="https://giphy.com/gifs/cat-pixel-art-nyan-7lsw8RenVcjCM">GIPHY</a>.</sub>
+<a href="https://giphy.com/gifs/cat-pixel-art-nyan-7lsw8RenVcjCM"><img src="assets/footer-credit.svg" alt="Original Nyan Cat artwork via GIPHY. Public snapshot: {data['date_label']}." width="100%" /></a>
 '''
     def responsive(match):
         name, alt = match[1], match[2]

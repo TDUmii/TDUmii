@@ -125,6 +125,7 @@ def main():
     readme = f'''<div align="center">
 <h1>Hi, I'm Umi.</h1>
 <p>Building useful little things.</p>
+<a href="https://tdumii.github.io/TDUmii/">Website</a>
 <img src="assets/nyan-cat.gif" alt="Nyan Cat flying with a rainbow trail" width="500" />
 </div>
 

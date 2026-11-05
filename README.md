@@ -1,6 +1,7 @@
 <div align="center">
 <h1>Hi, I'm Umi.</h1>
 <p>Building useful little things.</p>
+<a href="https://tdumii.github.io/TDUmii/">Website</a>
 <img src="assets/nyan-cat.gif" alt="Nyan Cat flying with a rainbow trail" width="500" />
 </div>
 
@@ -8,7 +9,7 @@
 
 ### Loadout
 
-![Repository languages: C++, JavaScript, HTML, C#, TypeScript, Python](assets/languages.svg)
+![Repository languages: Python, C++, JavaScript, HTML, C#, TypeScript](assets/languages.svg)
 
 ### Activity
 

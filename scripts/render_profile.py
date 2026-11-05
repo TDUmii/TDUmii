@@ -3,7 +3,9 @@ from pathlib import Path
 from datetime import date
 from html import escape
 import base64
+import hashlib
 import json
+import re
 
 ROOT = Path(__file__).resolve().parents[1]
 ASSETS = ROOT / 'assets'
@@ -134,6 +136,7 @@ def render(data):
 
 <sub>Public data · {data['date_label']}. Nyan Cat via <a href="https://giphy.com/gifs/cat-pixel-art-nyan-7lsw8RenVcjCM">GIPHY</a>.</sub>
 '''
+    readme = re.sub(r'src="assets/([^"?]+)"', lambda match: 'src="assets/' + match[1] + '?v=' + hashlib.sha256((ASSETS / match[1]).read_bytes()).hexdigest()[:10] + '"', readme)
     (ROOT / 'README.md').write_text(readme, encoding='utf-8')
 
 

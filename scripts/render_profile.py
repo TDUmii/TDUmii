@@ -23,7 +23,7 @@ def rect(x, y, w, h, fill=PANEL, radius=12, stroke=None):
 
 def shell(w, h, body, title):
     font = base64.b64encode((ASSETS / 'sora-latin.woff2').read_bytes()).decode()
-    return f'''<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="{w}" height="{h}" viewBox="0 0 {w} {h}" role="img" aria-label="{escape(title, quote=True)}"><title>{escape(title)}</title><style>@font-face{{font-family:Sora;src:url(data:font/woff2;base64,{font});font-weight:400 800}}text{{font-family:Sora,Arial,sans-serif}}.pulse{{animation:pulse 3s ease-in-out infinite}}.flow{{stroke-dasharray:6 12;animation:flow 3s linear infinite}}@keyframes pulse{{0%,100%{{opacity:.4}}50%{{opacity:1}}}}@keyframes flow{{to{{stroke-dashoffset:-72}}}}@media(prefers-reduced-motion:reduce){{.pulse,.flow{{animation:none}}.moving{{display:none}}}}</style>{rect(0,0,w,h,BG)}{body}</svg>'''
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="{w}" height="{h}" viewBox="0 0 {w} {h}" role="img" aria-label="{escape(title, quote=True)}"><title>{escape(title)}</title><style>@font-face{{font-family:Sora;src:url(data:font/woff2;base64,{font});font-weight:400 800}}text{{font-family:Sora,Arial,sans-serif}}.nyan-still{{display:none}}.pulse{{animation:pulse 3s ease-in-out infinite}}.flow{{stroke-dasharray:6 12;animation:flow 3s linear infinite}}@keyframes pulse{{0%,100%{{opacity:.4}}50%{{opacity:1}}}}@keyframes flow{{to{{stroke-dashoffset:-72}}}}@media(prefers-reduced-motion:reduce){{.pulse,.flow{{animation:none}}.moving,.nyan-live{{display:none}}.nyan-still{{display:inline}}}}</style>{rect(0,0,w,h,BG)}{body}</svg>'''
 
 
 def pill(x, y, value, color=MINT, width=None):
@@ -37,13 +37,17 @@ def write(name, w, h, body, title):
 
 def render(data):
     gif = base64.b64encode((ASSETS / 'nyan-cat.gif').read_bytes()).decode()
+    poster = base64.b64encode((ASSETS / 'nyan-cat-still.png').read_bytes()).decode()
+    def nyan(x, y, width, height):
+        frame = f'x="{x}" y="{y}" width="{width}" height="{height}" style="image-rendering:pixelated"'
+        return f'<image class="nyan-live" {frame} href="data:image/gif;base64,{gif}"/><image class="nyan-still" {frame} href="data:image/png;base64,{poster}"/>'
     hero = text(34, 72, "Umi's build lab.", 49, INK, 700)
     hero += text(37, 113, 'Windows tools. AI bridges. Small obsessions.', 20, MUTED)
     hero += text(37, 151, 'I build things that make a desktop more useful.', 16, MUTED)
     hero += pill(36, 185, 'Windows') + pill(139, 185, 'Local-first') + pill(270, 185, 'Public repos')
     hero += rect(615, 22, 361, 209, PANEL, 12)
     hero += '<path d="M637 47h5m309 0h5m-319 158h5m309 0h5" stroke="#8cbdd1" stroke-width="3" class="pulse"/>'
-    hero += f'<image x="630" y="49" width="329" height="130" href="data:image/gif;base64,{gif}" style="image-rendering:pixelated"/>'
+    hero += nyan(630, 49, 329, 130)
     hero += text(644, 211, 'NYAN CAT / FLIGHT DECK', 11, BLUE, 500)
     hero += '<path d="M36 247h928" stroke="#35464f"/>'
     hero += text(36, 280, f"{data['public_repos']} public repos", 15, MINT, 600)
@@ -54,11 +58,11 @@ def render(data):
 
     bridge = text(28, 44, 'UmiBridge', 27, INK, 650) + text(28, 75, 'AI meets your Windows desktop.', 16, MINT)
     bridge += text(28, 112, 'MCP tools, files, terminals and a local dashboard.', 13, MUTED)
+    bridge += '<g id="connection-layer" fill="none" stroke="#6e9c80" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M149 178H190m-5-4 5 4-5 4M334 178H377m-5-4 5 4-5 4"/></g>'
+    bridge += '<g id="connection-packets" class="moving"><circle id="bridge-packet-in" r="2.5" fill="#b8efaa"><animateMotion dur="2.4s" repeatCount="indefinite" path="M151 178H183"/></circle><circle id="bridge-packet-out" r="2.5" fill="#b8efaa"><animateMotion dur="2.4s" repeatCount="indefinite" path="M337 178H370"/></circle></g>'
     bridge += rect(29, 150, 115, 57, '#23363b', 8) + text(45, 184, 'ChatGPT', 16)
     bridge += rect(196, 143, 133, 70, '#344937', 8) + text(210, 184, 'UmiBridge', 16, MINT, 600)
     bridge += rect(382, 150, 88, 57, '#23363b', 8) + text(397, 184, 'PC', 18)
-    bridge += '<path d="M144 178h52m133 0h53" stroke="#b8efaa" stroke-width="2" class="flow"/>'
-    bridge += '<circle r="4" fill="#efc780" class="moving"><animateMotion dur="4s" repeatCount="indefinite" path="M145 178H382"/></circle>'
     bridge += pill(28, 242, 'MCP') + pill(102, 242, 'Windows') + pill(209, 242, 'Desktop tools')
     bridge += text(28, 306, 'Explore the repository', 13, MINT, 600)
     write('project-bridge.svg', 500, 334, bridge, 'UmiBridge: ChatGPT to Windows over MCP, with a local dashboard and desktop tools')
@@ -129,7 +133,7 @@ def render(data):
     mobile_hero = text(26, 54, "Umi's build lab.", 37, INK, 700)
     mobile_hero += text(28, 94, 'Windows tools. AI bridges.', 23, MUTED)
     mobile_hero += rect(20, 119, 460, 200, PANEL, 12)
-    mobile_hero += f'<image x="45" y="135" width="410" height="163" href="data:image/gif;base64,{gif}" style="image-rendering:pixelated"/>'
+    mobile_hero += nyan(45, 135, 410, 163)
     mobile_hero += text(28, 363, f"{data['public_repos']} public repos", 23, MINT, 600)
     mobile_hero += text(300, 363, f"{data['stars']} stars", 23, GOLD, 600)
     mobile_hero += text(28, 411, f"{len(data['languages'])} languages", 23, BLUE, 600)
@@ -183,20 +187,20 @@ def render(data):
 
     # Native README links inherit GitHub's blue link styling. Keep the closing
     # navigation in the same visual family as the profile artwork instead.
-    def footer_tile(name, label, mobile_lines, primary):
+    def footer_tile(name, label, primary):
         fill, ink = (MINT, '#18291c') if primary else (PANEL, INK)
-        desktop = rect(0, 0, 500, 108, fill, 12)
-        desktop += text(27, 65, label, 26, ink, 600)
-        desktop += f'<path d="M438 67l25-25m-25 0h25v25" fill="none" stroke="{ink}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>'
-        write(name + '.svg', 500, 108, desktop, label)
-        mobile = rect(0, 0, 250, 148, fill, 12)
-        mobile += text(20, 55, mobile_lines[0], 27, ink, 600)
-        mobile += text(20, 92, mobile_lines[1], 27, ink, 600)
-        mobile += f'<path d="M201 125l19-19m-19 0h19v19" fill="none" stroke="{ink}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>'
-        write(name + '-mobile.svg', 250, 148, mobile, label)
+        desktop = rect(0, 0, 500, 58, fill, 8)
+        desktop += text(23, 37, label, 20, ink, 600)
+        desktop += f'<path d="M450 37l16-16m-16 0h16v16" fill="none" stroke="{ink}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'
+        write(name + '.svg', 500, 58, desktop, label)
+        mobile = rect(0, 0, 250, 76, fill, 9)
+        mobile_label = 'Build lab' if primary else 'Repositories'
+        mobile += text(16, 46, mobile_label, 22, ink, 600)
+        mobile += f'<path d="M211 46l15-15m-15 0h15v15" fill="none" stroke="{ink}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'
+        write(name + '-mobile.svg', 250, 76, mobile, label)
 
-    footer_tile('footer-lab', 'Explore the lab', ('Explore', 'the lab'), True)
-    footer_tile('footer-code', 'All repositories', ('Browse', 'the code'), False)
+    footer_tile('footer-lab', 'Explore the lab', True)
+    footer_tile('footer-code', 'All repositories', False)
     credit = '<path d="M20 1h960" stroke="#35464f"/>'
     credit += text(23, 36, 'Nyan Cat via GIPHY', 15, BLUE)
     credit += '<path d="M206 34l11-11m-11 0h11v11" fill="none" stroke="#8cbdd1" stroke-width="1.5"/>'

@@ -186,29 +186,51 @@ def render(data):
         mt += text(17, y, name, 24, colors[i % len(colors)], 500) + text(212, y, count, 24, MUTED)
     write('toolkit-mobile.svg', 250, 350, mt, 'Primary programming language by public repository count, not a proficiency rating')
 
-    # Wide native rows keep the repository names and purpose readable on GitHub.
-    for slug, name, short_name, description, mobile_lines, color in [
-        ('bridge', 'UmiBridge', 'UmiBridge', 'Connect ChatGPT to Windows with MCP tools and a local dashboard.', ['ChatGPT meets Windows.', 'MCP tools. A local dashboard.'], MINT),
-        ('quietshare', 'QuietShare', 'QuietShare', 'Documents, presenter notes and optional offline transcription.', ['Documents. Presenter notes.', 'Optional offline transcription.'], BLUE),
-        ('automation', 'Background Automation Studio', 'Background Automation Studio', 'Record Windows actions, edit a timeline and replay a workflow.', ['Record Windows actions.', 'Edit a timeline. Replay a workflow.'], GOLD),
+    # Real product views stay self-contained in GitHub's SVG image proxy.
+    for slug, name, descriptions, capabilities, color, caption in [
+        ('bridge', 'UmiBridge', ['ChatGPT meets your', 'Windows desktop.'], ['MCP', 'Files & terminal'], MINT, 'Actual UI · demo state'),
+        ('quietshare', 'QuietShare', ['Documents, notes and', 'optional offline transcription.'], ['Presentations', 'Offline Whisper'], BLUE, 'Actual interface'),
+        ('automation', 'Background Automation Studio', ['Record Windows actions.', 'Edit and replay workflows.'], ['Visual editor', 'Readable DSL'], GOLD, 'Workflow sample'),
     ]:
-        row = '<path d="M28 1h944" stroke="#35464f"/>'
-        row += text(30, 57, name, 29, INK, 650)
-        row += text(30, 96, description, 18, MUTED)
-        row += text(30, 133, 'Open repository', 14, color, 600)
-        row += f'<path d="M930 63l21-21m-21 0h21v21" fill="none" stroke="{color}" stroke-width="2"/>'
-        write('project-row-' + slug + '.svg', 1000, 160, row, name + ': ' + description + ' Open repository.')
-        mobile_row = '<path d="M22 1h456" stroke="#35464f"/>'
-        if slug == 'automation':
-            mobile_row += text(23, 42, 'Background Automation', 26, INK, 650) + text(23, 76, 'Studio', 26, INK, 650)
-            baseline = 113
-        else:
-            mobile_row += text(23, 49, short_name, 30, INK, 650)
-            baseline = 91
-        mobile_row += text(23, baseline, mobile_lines[0], 22, MUTED) + text(23, baseline + 32, mobile_lines[1], 22, MUTED)
-        mobile_row += text(23, baseline + 73, 'Open repository', 20, color, 600)
-        mobile_row += f'<path d="M440 53l17-17m-17 0h17v17" fill="none" stroke="{color}" stroke-width="2"/>'
-        write('project-row-' + slug + '-mobile.svg', 500, baseline + 99, mobile_row, name + ': ' + description + ' Open repository.')
+        payload = None
+        if slug != 'automation':
+            filename = 'work-bridge.png' if slug == 'bridge' else 'work-quietshare.png'
+            payload = base64.b64encode((ASSETS / filename).read_bytes()).decode()
+
+        for mobile in [False, True]:
+            w, h = (500, 470) if mobile else (1000, 310)
+            copy_x = 32 if mobile or slug != 'quietshare' else 622
+            image_x = 20 if mobile or slug == 'quietshare' else 438
+            image_y, image_w, image_h = (228, 460, 211) if mobile else (20, 542, 245)
+            row = rect(1, 1, w - 2, h - 2, '#111d2b', 15, LINE)
+            title_lines = ['Background Automation', 'Studio'] if slug == 'automation' else [name]
+            title_y = 51 if mobile else 65
+            title_size = 29 if mobile else 30
+            if slug == 'automation' and not mobile:
+                title_lines = ['Background', 'Automation Studio']
+            for i, line in enumerate(title_lines):
+                row += text(copy_x, title_y + i * 37, line, title_size, INK, 650)
+            desc_y = title_y + len(title_lines) * 37 + 13
+            for i, line in enumerate(descriptions):
+                row += text(copy_x, desc_y + i * 27, line, 19 if mobile else 18, MUTED)
+            cap_y = 204 if mobile else 263
+            row += text(copy_x, cap_y, capabilities[0], 15, color, 550)
+            second_x = copy_x + (146 if slug != 'bridge' else 62)
+            row += text(second_x, cap_y, capabilities[1], 15, color, 550)
+            arrow_x = 448 if mobile else (948 if slug == 'quietshare' else 374)
+            row += f'<path d="M{arrow_x} 54l17-17m-17 0h17v17" fill="none" stroke="{color}" stroke-width="2"/>'
+            if payload:
+                row += f'<defs><clipPath id="product-crop"><rect x="{image_x}" y="{image_y}" width="{image_w}" height="{image_h}" rx="10"/></clipPath></defs>'
+                alignment = 'xMidYMin slice' if slug == 'quietshare' else 'xMidYMid slice'
+                row += f'<image x="{image_x}" y="{image_y}" width="{image_w}" height="{image_h}" preserveAspectRatio="{alignment}" clip-path="url(#product-crop)" href="data:image/png;base64,{payload}"/>'
+            else:
+                row += rect(image_x, image_y, image_w, image_h, '#202620', 10)
+                row += text(image_x + 26, image_y + 38, 'Workflow sample', 16, GOLD, 550)
+                for i, command in enumerate(['MOVE 240 180', 'CLICK 240 180', 'WAIT 500']):
+                    row += f'<text x="{image_x + 26}" y="{image_y + 88 + i * 43}" fill="{INK}" font-size="25" style="font-family:monospace">{command}</text>'
+            if payload:
+                row += text(image_x + 2, image_y + image_h + 21, caption, 13 if mobile else 12, color)
+            write('project-row-' + slug + ('-mobile' if mobile else '') + '.svg', w, h, row, name + ': ' + ' '.join(descriptions) + ' ' + caption + '. Open repository.')
 
     compact_tools = text(29, 37, 'Toolkit', 20, INK, 600)
     compact_tools += text(29, 69, 'Primary languages across public repositories', 13, MUTED)

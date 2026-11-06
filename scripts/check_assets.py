@@ -63,5 +63,15 @@ for source in json.loads((ROOT / 'assets/pixel-assets-source.json').read_text())
     path = ROOT / 'assets' / source['file']
     assert hashlib.sha256(path.read_bytes()).hexdigest() == source['sha256'], 'Downloaded GIF no longer matches its original'
     assert path.stat().st_size == source['bytes'] and source['license'] == 'CC0-1.0'
+for source in json.loads((ROOT / 'assets/work-sources.json').read_text()):
+    path = ROOT / 'assets' / source['file']
+    assert hashlib.sha256(path.read_bytes()).hexdigest() == source['sha256']
+    slug = 'bridge' if source['file'] == 'work-bridge.png' else 'quietshare'
+    for suffix in ['', '-mobile']:
+        poster = ET.parse(ROOT / f'assets/project-row-{slug}{suffix}.svg')
+        images = poster.findall('.//svg:image', NS)
+        assert len(images) == 1
+        assert base64.b64decode(images[0].attrib['href'].split(',', 1)[1]) == path.read_bytes(), 'Project poster changed the actual interface image'
 print('PASS: 202 packet positions, active-date orbit masks, static calendar, motion fallbacks, footer sizes and versioned README assets.')
 print('PASS: full-width native rows and exact original GIF payloads with recorded provenance.')
+print('PASS: native desktop/mobile product posters embed the exact source interface captures.')

@@ -1,0 +1,18 @@
+[
+  {
+    "file": "work-bridge.png",
+    "source": "https://github.com/TDUmii/umi-bridge/tree/main/scripts/corp-office",
+    "source_commit": "f0c5a4f5a5abacea06e9b7eee1679c48281c355f",
+    "sha256": "ec25e86ea1789527036811a5d43f700366f8020ec44aa9c847066dffb08ee517",
+    "bytes": 75809,
+    "state": "Actual office frontend rendered with illustrative idle role-only staff; no production data."
+  },
+  {
+    "file": "work-quietshare.png",
+    "source": "https://github.com/TDUmii/QuietShare",
+    "source_commit": "d4f8e61bab9986eb3686cdc4cb88da471c64709d",
+    "sha256": "6163239a0762fa1263804eac94bf78e4546fcefbc65642645389a41fd77edb22",
+    "bytes": 24825,
+    "state": "Actual notes reader QA capture with English controls and sample presentation text; no private files."
+  }
+]

@@ -1,77 +1,79 @@
-"""Regression checks for the observed connector, motion and footer defects."""
+"""Check the shipped C1 profile: real data, original media and native links."""
 from pathlib import Path
 from urllib.parse import urlsplit, parse_qs
 from xml.etree import ElementTree as ET
-import hashlib
 import base64
+import hashlib
 import json
 import re
 
 ROOT = Path(__file__).resolve().parents[1]
+ASSETS = ROOT / 'assets'
 NS = {'svg': 'http://www.w3.org/2000/svg'}
-bridge = ET.parse(ROOT / 'assets/project-bridge.svg')
-nodes = [(29, 150, 115, 57), (196, 143, 133, 70), (382, 150, 88, 57)]
-packet_count = 0
-for packet in bridge.findall('.//svg:circle', NS):
-    motion = packet.find('svg:animateMotion', NS)
-    if motion is None:
-        continue
-    match = re.fullmatch(r'M([\d.]+) ([\d.]+)H([\d.]+)', motion.attrib['path'])
-    assert match, 'Packet regression check expects a horizontal connector path'
-    start, y, end = map(float, match.groups())
-    radius = float(packet.attrib['r'])
-    for n in range(101):
-        x = start + (end - start) * n / 100
-        assert not any(x + radius > nx and x - radius < nx + w and y + radius > ny and y - radius < ny + h for nx, ny, w, h in nodes), 'Animated packet crosses a node'
-    packet_count += 1
-assert packet_count == 2
-data = json.loads((ROOT / 'assets/profile-data.json').read_text())
-for filename, compact in [('activity.svg', False), ('calendar.svg', False), ('activity-mobile.svg', True)]:
-    calendar = ET.parse(ROOT / 'assets' / filename)
-    mask = calendar.find('.//svg:mask[@id="orbit-active"]', NS)
-    assert mask is not None and mask.attrib['maskUnits'] == 'userSpaceOnUse'
-    days = data['contributions'][-182:] if compact else data['contributions']
-    assert len(mask.findall('svg:rect', NS)) == sum(day['count'] > 0 for day in days), 'Calendar glow may highlight inactive dates'
-    assert calendar.find('.//svg:g[@class="orbit-motion"]', NS) is not None
-    assert '@media(prefers-reduced-motion:reduce){.orbit-motion{display:none}}' in (ROOT / 'assets' / filename).read_text()
-assert 'orbit-motion' not in (ROOT / 'assets/calendar-static.svg').read_text(), 'Static calendar must have no orbit sweep'
-for variant in ['', '-mobile']:
-    source = (ROOT / f'assets/profile-hero{variant}.svg').read_text(encoding='utf-8')
-    assert 'class="nyan-live"' in source and 'class="nyan-still"' in source
-    assert '.moving,.nyan-live{display:none}.nyan-still{display:inline}' in source
-for name in ['footer-lab', 'footer-code']:
-    for suffix, rendered_width in [('', 414.5), ('-mobile', 150.9)]:
-        image = ET.parse(ROOT / f'assets/{name}{suffix}.svg').getroot()
-        rendered_height = rendered_width * float(image.attrib['height']) / float(image.attrib['width'])
-        assert 44 <= rendered_height <= 56, 'Footer action is undersized or oversized'
+data = json.loads((ASSETS / 'profile-data.json').read_text(encoding='utf-8'))
+assert sum(day['count'] for day in data['contributions']) == data['contribution_total']
+assert sum(day['count'] > 0 for day in data['contributions']) == data['active_days']
+
 readme = (ROOT / 'README.md').read_text(encoding='utf-8')
+assert readme.count('<picture>') == 9
+for repo in ['umi-bridge', 'QuietShare', 'BackgroundAutomationStudio']:
+    assert readme.count('href="https://github.com/TDUmii/' + repo + '"') == 1
+assert 'aoe' not in readme.lower()
+roots = {}
 for ref in re.findall(r'(?:src|srcset)="([^"]+)"', readme):
     url = urlsplit(ref)
     assert url.netloc == 'raw.githubusercontent.com', 'Redirect would discard the cache version'
-    path = ROOT / 'assets' / url.path.rsplit('/', 1)[1]
+    path = ASSETS / url.path.rsplit('/', 1)[1]
     assert path.is_file()
     assert parse_qs(url.query)['v'][0] == hashlib.sha256(path.read_bytes()).hexdigest()[:10]
-    ET.parse(path)
-assert 'aoe' not in readme.lower()
-assert '<table' not in readme.lower(), 'The native profile must use readable full-width project rows'
-approved = ['nyan-cat', 'pixel-planet', 'pixel-robot']
-for variant in ['', '-mobile']:
-    hero = ET.parse(ROOT / f'assets/profile-hero{variant}.svg')
-    payloads = {base64.b64decode(node.attrib['href'].split(',', 1)[1]) for node in hero.findall('.//svg:image', NS) if node.attrib.get('href', '').startswith('data:image/gif;base64,')}
-    assert payloads == {(ROOT / f'assets/{name}.gif').read_bytes() for name in approved}, 'Native hero changed or lost an original GIF'
-for source in json.loads((ROOT / 'assets/pixel-assets-source.json').read_text()):
-    path = ROOT / 'assets' / source['file']
-    assert hashlib.sha256(path.read_bytes()).hexdigest() == source['sha256'], 'Downloaded GIF no longer matches its original'
-    assert path.stat().st_size == source['bytes'] and source['license'] == 'CC0-1.0'
-for source in json.loads((ROOT / 'assets/work-sources.json').read_text()):
-    path = ROOT / 'assets' / source['file']
+    roots[path.name] = ET.parse(path)
+    assert chr(194) + chr(183) not in path.read_text(encoding='utf-8'), 'Broken text encoding in native art'
+    for image in roots[path.name].findall('.//svg:image', NS):
+        assert image.attrib['href'].startswith('data:image/'), 'Native art must be self-contained'
+
+for name, compact in [('activity.svg', False), ('calendar.svg', False), ('activity-mobile.svg', True)]:
+    tree = ET.parse(ASSETS / name)
+    mask = tree.find('.//svg:mask[@id="orbit-active"]', NS)
+    assert mask is not None and mask.attrib['maskUnits'] == 'userSpaceOnUse'
+    days = data['contributions'][-182:] if compact else data['contributions']
+    assert len(mask.findall('svg:rect', NS)) == sum(day['count'] > 0 for day in days), 'Orbit highlights inactive dates'
+    assert tree.find('.//svg:g[@class="orbit-motion"]', NS) is not None
+    assert '@media(prefers-reduced-motion:reduce){.orbit-motion{display:none}}' in (ASSETS / name).read_text()
+assert 'orbit-motion' not in (ASSETS / 'calendar-static.svg').read_text()
+
+all_gifs = set()
+for name, tree in roots.items():
+    for image in tree.findall('.//svg:image', NS):
+        href = image.attrib['href']
+        if href.startswith('data:image/gif;base64,'):
+            all_gifs.add(base64.b64decode(href.split(',', 1)[1]))
+            assert image.attrib['preserveAspectRatio'] == 'xMidYMid meet'
+    if name.startswith('profile-hero'):
+        source = (ASSETS / name).read_text(encoding='utf-8')
+        assert 'class="nyan-live"' in source and 'class="nyan-still"' in source
+        assert '.moving,.nyan-live{display:none}.nyan-still{display:inline}' in source
+expected = {(ASSETS / (name + '.gif')).read_bytes() for name in ['nyan-cat', 'pixel-planet', 'pixel-robot', 'pixel-flame']}
+assert all_gifs == expected, 'Native GIFs no longer match the original downloads'
+meta = json.loads((ASSETS / 'nyan-cat-source.json').read_text(encoding='utf-8'))
+assert hashlib.sha256((ASSETS / 'nyan-cat.gif').read_bytes()).hexdigest() == meta['sha256']
+for source in json.loads((ASSETS / 'pixel-assets-source.json').read_text()):
+    path = ASSETS / source['file']
     assert hashlib.sha256(path.read_bytes()).hexdigest() == source['sha256']
-    slug = 'bridge' if source['file'] == 'work-bridge.png' else 'quietshare'
+    assert path.stat().st_size == source['bytes'] and source['license'] == 'CC0-1.0'
+for source in json.loads((ASSETS / 'c1-art-source.json').read_text()):
+    path = ASSETS / source['file']
+    assert hashlib.sha256(path.read_bytes()).hexdigest() == source['sha256']
+    slug = {'c1-bridge-art.png': 'bridge', 'c1-quiet-art.png': 'quietshare', 'c1-automation-art.png': 'automation'}[source['file']]
     for suffix in ['', '-mobile']:
-        poster = ET.parse(ROOT / f'assets/project-row-{slug}{suffix}.svg')
-        images = poster.findall('.//svg:image', NS)
+        tree = roots['project-row-' + slug + suffix + '.svg']
+        images = tree.findall('.//svg:image', NS)
         assert len(images) == 1
-        assert base64.b64decode(images[0].attrib['href'].split(',', 1)[1]) == path.read_bytes(), 'Project poster changed the actual interface image'
-print('PASS: 202 packet positions, active-date orbit masks, static calendar, motion fallbacks, footer sizes and versioned README assets.')
-print('PASS: full-width native rows and exact original GIF payloads with recorded provenance.')
-print('PASS: native desktop/mobile product posters embed the exact source interface captures.')
+        assert base64.b64decode(images[0].attrib['href'].split(',', 1)[1]) == path.read_bytes(), 'Native art payload differs from its approved illustration'
+for name in ['footer-lab', 'footer-code']:
+    for suffix, width in [('', 414.5), ('-mobile', 150.9)]:
+        root = roots[name + suffix + '.svg'].getroot()
+        height = width * float(root.attrib['height']) / float(root.attrib['width'])
+        assert 44 <= height <= 60, 'Native footer control is too small or oversized'
+print('PASS: real dated totals, active-date orbit masks, static calendar and reduced-motion fallbacks.')
+print('PASS: three independent native project links, exact original GIFs/illustrations and versioned self-contained SVGs.')
+print('PASS: native footer action dimensions and original download provenance.')

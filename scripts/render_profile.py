@@ -9,8 +9,8 @@ import re
 
 ROOT = Path(__file__).resolve().parents[1]
 ASSETS = ROOT / 'assets'
-BG, PANEL, INK, MUTED, LINE = '#0d1523', '#17242d', '#f0eee4', '#a9b8cc', '#2c3b4e'
-MINT, GOLD, BLUE = '#b8efaa', '#efc780', '#8cbdd1'
+BG, PANEL, INK, MUTED, LINE = '#f0ebe1', '#f0ebe1', '#0c1927', '#394638', '#0c1927'
+MINT, GOLD, BLUE = '#aaf3ab', '#fdbc44', '#8cbdd1'
 
 
 def text(x, y, content, size=18, color=INK, weight=400):
@@ -23,7 +23,7 @@ def rect(x, y, w, h, fill=PANEL, radius=12, stroke=None):
 
 def shell(w, h, body, title):
     font = base64.b64encode((ASSETS / 'sora-latin.woff2').read_bytes()).decode()
-    return f'''<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="{w}" height="{h}" viewBox="0 0 {w} {h}" role="img" aria-label="{escape(title, quote=True)}"><title>{escape(title)}</title><style>@font-face{{font-family:Sora;src:url(data:font/woff2;base64,{font});font-weight:400 800}}text{{font-family:Sora,Arial,sans-serif}}.nyan-still{{display:none}}.pulse{{animation:pulse 3s ease-in-out infinite}}.flow{{stroke-dasharray:6 12;animation:flow 3s linear infinite}}@keyframes pulse{{0%,100%{{opacity:.4}}50%{{opacity:1}}}}@keyframes flow{{to{{stroke-dashoffset:-72}}}}@media(prefers-reduced-motion:reduce){{.pulse,.flow{{animation:none}}.moving,.nyan-live{{display:none}}.nyan-still{{display:inline}}}}</style>{rect(0,0,w,h,BG)}{body}</svg>'''
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="{w}" height="{h}" viewBox="0 0 {w} {h}" role="img" aria-label="{escape(title, quote=True)}"><title>{escape(title)}</title><style>@font-face{{font-family:Sora;src:url(data:font/woff2;base64,{font});font-weight:400 800}}text{{font-family:Sora,Arial,sans-serif}}.nyan-still{{display:none}}.art{{animation:bob 5s ease-in-out infinite}}@keyframes bob{{0%,100%{{transform:translateY(0)}}50%{{transform:translateY(-3px)}}}}.pulse{{animation:pulse 3s ease-in-out infinite}}.flow{{stroke-dasharray:6 12;animation:flow 3s linear infinite}}@keyframes pulse{{0%,100%{{opacity:.4}}50%{{opacity:1}}}}@keyframes flow{{to{{stroke-dashoffset:-72}}}}@media(prefers-reduced-motion:reduce){{.pulse,.flow,.art{{animation:none}}.moving,.nyan-live{{display:none}}.nyan-still{{display:inline}}}}</style>{rect(0,0,w,h,BG)}{body}</svg>'''
 
 
 def pill(x, y, value, color=MINT, width=None):
@@ -47,81 +47,77 @@ def commit_orbit(days, start, x0, y0, dx, dy, width, cell=12, height=11):
     return f'''<defs><mask id="orbit-active" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse" x="{x0}" y="{y0}" width="{width}" height="{grid_h}">{''.join(marks)}</mask><linearGradient id="orbit-light"><stop offset="0" stop-color="{MINT}" stop-opacity="0"/><stop offset=".72" stop-color="{MINT}" stop-opacity=".16"/><stop offset="1" stop-color="{GOLD}" stop-opacity=".42"/></linearGradient></defs><style>@media(prefers-reduced-motion:reduce){{.orbit-motion{{display:none}}}}</style><g class="orbit-motion" aria-hidden="true" pointer-events="none"><g mask="url(#orbit-active)"><rect x="-125" y="{y0}" width="145" height="{grid_h}" fill="url(#orbit-light)"><animateTransform attributeName="transform" type="translate" values="{x0 - 35} 0;{x0 + width + 130} 0" dur="9s" begin="-6.4s" repeatCount="indefinite"/></rect></g><g transform="translate({x0} {y0 - 8})"><animateTransform attributeName="transform" type="translate" values="{x0 - 35} {y0 - 8};{x0 + width + 130} {y0 - 8}" dur="9s" begin="-6.4s" repeatCount="indefinite"/><path d="M-1-4h2v3h3v2H1v3h-2V1h-3v-2h3z" fill="{GOLD}"/>{''.join(rect(-10-i*10, -1, max(2, 6-i*.6), 2, MINT, 0)[:-2] + f' opacity="{.6-i*.07}"/>' for i in range(6))}</g></g>'''
 
 
+def image_asset(name, x, y, w, h, moving=False):
+    payload = base64.b64encode((ASSETS / name).read_bytes()).decode()
+    mime = 'image/gif' if name.endswith('.gif') else 'image/png'
+    return f'<image class="{("art" if moving else "")}" x="{x}" y="{y}" width="{w}" height="{h}" preserveAspectRatio="xMidYMid meet" href="data:{mime};base64,{payload}"/>'
+
+
+def arrow(x, y, ink=INK, size=26):
+    return f'<path d="M{x} {y}h{size}m-{size * .4}-{size * .4} {size * .4} {size * .4}-{size * .4} {size * .4}" fill="none" stroke="{ink}" stroke-width="2.5"/>'
+
+
 def render(data):
-    gif = base64.b64encode((ASSETS / 'nyan-cat.gif').read_bytes()).decode()
-    poster = base64.b64encode((ASSETS / 'nyan-cat-still.png').read_bytes()).decode()
-    def nyan(x, y, width, height):
-        frame = f'x="{x}" y="{y}" width="{width}" height="{height}" style="image-rendering:pixelated"'
-        return f'<image class="nyan-live" {frame} href="data:image/gif;base64,{gif}"/><image class="nyan-still" {frame} href="data:image/png;base64,{poster}"/>'
-    def pixel(name, x, y, width, height):
-        live = base64.b64encode((ASSETS / (name + '.gif')).read_bytes()).decode()
-        still = base64.b64encode((ASSETS / (name + '-still.png')).read_bytes()).decode()
-        frame = f'x="{x}" y="{y}" width="{width}" height="{height}" style="image-rendering:pixelated"'
-        return f'<image class="nyan-live" {frame} href="data:image/gif;base64,{live}"/><image class="nyan-still" {frame} href="data:image/png;base64,{still}"/>'
-    hero = text(34, 97, "Hi, I'm Umi.", 58, INK, 700)
-    hero += text(37, 145, 'Windows tools. AI bridges.', 22, MUTED)
-    hero += text(37, 178, 'Small obsessions.', 22, MUTED)
-    hero += nyan(595, 90, 365, 145)
-    hero += pixel('pixel-planet', 861, 7, 95, 95)
-    hero += pixel('pixel-robot', 500, 176, 56, 56)
-    hero += '<path d="M578 45h3m-1-1v3m183 171h3m-1-1v3M958 159h3m-1-1v3" stroke="#8cbdd1" stroke-width="1.5"/>'
-    hero += '<path d="M36 247h928" stroke="#35464f"/>'
-    hero += text(36, 280, f"{data['public_repos']} public repos", 15, MINT, 600)
-    hero += text(249, 280, f"{data['stars']} stars", 15, GOLD, 600)
-    hero += text(404, 280, f"{len(data['languages'])} languages", 15, BLUE, 600)
-    hero += text(638, 280, f"{data['contribution_total']} contributions", 15, MUTED)
-    write('profile-hero.svg', 1000, 310, hero, "Umi's build lab: Windows tools, AI bridges and automation, with the original Nyan Cat")
+    def pixel(name, x, y, w, h):
+        live = image_asset(name + '.gif', x, y, w, h).replace('class=""', 'class="nyan-live"')
+        still = image_asset(name + '-still.png', x, y, w, h).replace('class=""', 'class="nyan-still"')
+        return live + still
 
-    bridge = text(28, 44, 'UmiBridge', 27, INK, 650) + text(28, 86, 'MCP tools for your Windows desktop.', 16, MINT)
-    bridge += '<g id="connection-layer" fill="none" stroke="#6e9c80" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M149 178H190m-5-4 5 4-5 4M334 178H377m-5-4 5 4-5 4"/></g>'
-    bridge += '<g id="connection-packets" class="moving"><circle id="bridge-packet-in" r="2.5" fill="#b8efaa"><animateMotion dur="2.4s" repeatCount="indefinite" path="M151 178H183"/></circle><circle id="bridge-packet-out" r="2.5" fill="#b8efaa"><animateMotion dur="2.4s" repeatCount="indefinite" path="M337 178H370"/></circle></g>'
-    bridge += rect(29, 150, 115, 57, '#23363b', 8) + text(45, 184, 'ChatGPT', 16)
-    bridge += rect(196, 143, 133, 70, '#344937', 8) + text(210, 184, 'UmiBridge', 16, MINT, 600)
-    bridge += rect(382, 150, 88, 57, '#23363b', 8) + text(397, 184, 'PC', 18)
-    bridge += pill(28, 242, 'MCP') + pill(102, 242, 'Windows') + pill(209, 242, 'Desktop tools')
-    bridge += text(28, 306, 'Explore the repository', 13, MINT, 600)
-    write('project-bridge.svg', 500, 334, bridge, 'UmiBridge: ChatGPT to Windows over MCP, with a local dashboard and desktop tools')
+    for mobile in (False, True):
+        w, h = (500, 224) if mobile else (1000, 178)
+        hero = text(20, 57, 'umi', 53, INK, 800) + text(119, 57, '.', 53, '#68ba60', 800)
+        hero += pixel('nyan-cat', 155, 5, 205, 81.5)
+        hero += f'<path d="M18 83H{w-18}" stroke="{INK}" stroke-width="2"/>'
+        if mobile:
+            hero += text(20, 143, 'Things I', 53, INK, 800) + text(20, 201, 'build.', 53, INK, 800)
+            hero += pixel('pixel-planet', 348, 108, 125, 100)
+        else:
+            hero += text(23, 150, 'Things I build', 67, INK, 800) + text(522, 150, '.', 67, '#68ba60', 800)
+            hero += pixel('pixel-planet', 860, 87, 110, 84)
+            hero += text(800, 52, '@TDUmii', 18, INK, 600)
+        write('profile-hero' + ('-mobile' if mobile else '') + '.svg', w, h, hero, 'Umi. Things I build. Original Nyan Cat and pixel planet.')
 
-    quiet = text(28, 44, 'QuietShare', 27, INK, 650) + text(28, 86, 'Presentations, notes and offline transcripts.', 15, BLUE)
-    quiet += rect(30, 141, 175, 94, '#253744', 8) + rect(41, 152, 153, 62, '#17242d', 4)
-    quiet += text(55, 176, 'Presenter', 14, BLUE, 500) + '<path d="M56 191h97m-97 9h74" stroke="#607d8e" stroke-width="3"/>'
-    quiet += rect(300, 141, 167, 94, '#253744', 8) + rect(311, 152, 145, 62, '#17242d', 4)
-    quiet += text(331, 183, 'Audience', 14, INK, 500)
-    quiet += '<path d="M205 182h95" stroke="#8cbdd1" stroke-width="2" class="flow"/>'
-    quiet += pill(28, 249, 'Presentation', BLUE) + pill(174, 249, 'Offline Whisper', BLUE)
-    quiet += text(28, 306, 'Explore the repository', 13, BLUE, 600)
-    write('project-quietshare.svg', 500, 334, quiet, 'QuietShare: presentation companion with documents, notes and optional offline transcription')
+    # Separate linked poster images preserve native GitHub links. A dedicated
+    # compact viewBox keeps both top cells legible on small GitHub screens.
+    for mobile in (False, True):
+        w, h = (250, 330) if mobile else (500, 340)
+        for slug, lines, descriptions, art in [
+            ('bridge', ['Umi', 'Bridge'], ['ChatGPT meets', 'Windows.'], 'c1-bridge-art.png'),
+            ('quietshare', ['Quiet', 'Share'], ['Presentations, notes,', 'optional offline', 'transcription.'], 'c1-quiet-art.png'),
+        ]:
+            if slug == 'bridge':
+                shape = f'<path d="M0 0H{w-30}v18h20v38h10V{h}H0Z" fill="{MINT}"/>'
+            else:
+                shape = f'<path d="M1 15h34L44 1H{w-1}V{h-1}H1Z" fill="{BG}" stroke="{INK}" stroke-width="2"/>'
+            x, title_size = (14, 43) if mobile else (23, 76)
+            y, leading = (58, 46) if mobile else (88, 78)
+            for i, line in enumerate(lines):
+                shape += text(x, y+i*leading, line, title_size, INK, 800)
+            dy, ds, dl = (141, 20, 25) if mobile else (206, 21, 27)
+            for i, line in enumerate(descriptions):
+                shape += text(x, dy+i*dl, line, ds, INK, 500)
+            shape += arrow(x+2, 211 if mobile else 286)
+            ax, ay, aw, ah = (55, 214, 190, 114) if mobile else (196, 178, 302, 160)
+            if not mobile and slug == 'quietshare':
+                ax, aw = 258, 240
+            shape += image_asset(art, ax, ay, aw, ah, True)
+            write('project-row-' + slug + ('-mobile' if mobile else '') + '.svg', w, h, shape, ('UmiBridge. ChatGPT meets Windows.' if slug == 'bridge' else 'QuietShare. Presentations, notes, optional offline transcription.') + ' Open repository.')
 
-    studio = text(28, 44, 'Background Automation Studio', 25, INK, 650)
-    studio += text(28, 86, 'Record and replay Windows workflows.', 16, GOLD)
-    studio += '<path d="M54 170H449" stroke="#4d5146" stroke-width="2"/>'
-    for i, (name, color) in enumerate([('Record', GOLD), ('Edit', BLUE), ('Replay', MINT)]):
-        x = 30 + i * 151
-        studio += rect(x, 143, 130, 63, '#2a3034', 8) + text(x + 19, 181, name, 17, color, 600)
-    studio += '<path d="M45 222h403" stroke="#efc780" stroke-width="2" class="flow"/>'
-    studio += pill(28, 249, 'Recorder', GOLD) + pill(141, 249, 'Timeline', GOLD) + pill(251, 249, 'Windows', GOLD)
-    studio += text(28, 306, 'Explore the repository', 13, GOLD, 600)
-    write('project-automation.svg', 500, 334, studio, 'Background Automation Studio: Windows action recording, visual workflow editing and replay')
-
-    counts = sorted(data['language_counts'].items(), key=lambda item: -item[1])
-    count_total = sum(n for _, n in counts)
-    colors = ['#b8efaa', '#8cbdd1', '#efc780', '#cfb4e7', '#a1c2bc', '#dcad89']
-    tools = text(28, 43, 'The toolkit', 25, INK, 600)
-    tools += text(28, 73, 'Primary language per public repository', 12, MUTED)
-    offset = 28
-    for i, (name, count) in enumerate(counts):
-        width = 435 * count / count_total
-        tools += rect(offset, 96, width - 3, 13, colors[i % len(colors)], 3)
-        offset += width
-        y = 145 + i * 25
-        tools += rect(29, y - 9, 7, 7, colors[i % len(colors)], 2)
-        tools += text(48, y, name, 13) + text(429, y, str(count), 13, MUTED)
-    write('toolkit.svg', 500, 334, tools, 'Programming languages by public repository count; not a proficiency ranking')
+        aw, ah = (500, 310) if mobile else (1000, 200)
+        studio = rect(0, 0, aw, ah, INK, 0)
+        size, line_h, first_y = (38, 40, 48) if mobile else (49, 50, 55)
+        for i, line in enumerate(['Background', 'Automation', 'Studio']):
+            studio += text(22, first_y + i*line_h, line, size, BG, 800)
+        studio += text(22 if mobile else 448, 175 if mobile else 82, 'Record. Edit. Replay.', 20 if mobile else 24, BG, 500)
+        studio += arrow(24 if mobile else 450, 212 if mobile else 118, BG)
+        studio += f'<path d="M{100 if mobile else 390} {ah}l20-24h{aw-120 if mobile else aw-410}v24z" fill="{GOLD}"/>'
+        studio += image_asset('c1-automation-art.png', 260 if mobile else 700, 110 if mobile else 10, 237 if mobile else 295, 196 if mobile else 184, True)
+        write('project-row-automation' + ('-mobile' if mobile else '') + '.svg', aw, ah, studio, 'Background Automation Studio. Record, edit and replay Windows workflows. Open repository.')
 
     days = data['contributions']
     start = date.fromisoformat(days[0]['date'])
     cells, months = '', set()
-    palette = ['#20313a', '#3b5b53', '#5d866b', '#89b985', '#b8efaa']
+    palette = ['#dedfd2', '#8cab7a', '#5e874f', '#355f35', '#153e27']
     for day in days:
         current = date.fromisoformat(day['date'])
         column, row = divmod((current-start).days, 7)
@@ -137,110 +133,13 @@ def render(data):
     write('calendar-static.svg', 1000, 170, '<g transform="translate(0,-64)">' + cells + '</g>', 'Real public GitHub calendar, static reduced-motion edition')
     activity = text(28, 43, 'Commit orbit', 25, INK, 600)
     activity += pixel('pixel-flame', 934, 247, 15, 20)
-    activity += text(750, 42, f"{data['contribution_total']} contributions", 15, MINT, 500)
+    activity += text(750, 42, f"{data['contribution_total']} contributions", 15, INK, 500)
     activity += cells + sweep + '<path d="M28 215h944" stroke="#35464f"/>'
     for i, (value, desc) in enumerate([(data['active_days'], 'active days'), (data['recent_contributions'], 'in the last 30 days'), (data['best_day'], 'most in one day')]):
         x = 30 + i * 318
-        activity += text(x, 250, value, 25, MINT, 600) + text(x + 72, 248, desc, 12, MUTED)
-    activity += text(29, 284, f"Public GitHub snapshot · {data['date_label']}", 11, MUTED)
+        activity += text(x, 250, value, 25, INK, 600) + text(x + 72, 248, desc, 12, MUTED)
+    activity += text(29, 284, f"Public GitHub snapshot / {data['date_label']}", 11, MUTED)
     write('activity.svg', 1000, 304, activity, 'Real public GitHub calendar and dated activity summary')
-
-    # GitHub's two-column mobile table displays each 250px asset at ~140 CSS px.
-    # Large, shorter labels are intentional; desktop assets remain unchanged.
-    mobile_hero = text(26, 64, "Hi, I'm Umi.", 46, INK, 700)
-    mobile_hero += text(28, 94, 'Windows tools. AI bridges.', 23, MUTED)
-    mobile_hero += pixel('pixel-planet', 407, 10, 76, 76)
-    mobile_hero += pixel('pixel-robot', 398, 279, 48, 48)
-    mobile_hero += nyan(45, 135, 410, 163)
-    mobile_hero += text(28, 363, f"{data['public_repos']} public repos", 23, MINT, 600)
-    mobile_hero += text(300, 363, f"{data['stars']} stars", 23, GOLD, 600)
-    mobile_hero += text(28, 411, f"{len(data['languages'])} languages", 23, BLUE, 600)
-    mobile_hero += text(245, 411, f"{data['contribution_total']} contributions", 19, MUTED)
-    write('profile-hero-mobile.svg', 500, 444, mobile_hero, "Umi's build lab: Windows tools and AI bridges, with the original animated Nyan Cat")
-
-    mb = text(17, 40, 'UmiBridge', 27, INK, 650)
-    mb += text(17, 84, 'AI meets your', 22, MINT) + text(17, 116, 'Windows PC.', 22, MINT)
-    mb += rect(17, 153, 216, 113, '#21382a', 9)
-    mb += text(37, 192, 'ChatGPT', 24) + '<path d="M123 204v22m-6-6 6 6 6-6" stroke="#b8efaa" stroke-width="2" fill="none"/>'
-    mb += text(55, 253, 'MCP tools', 23, MINT, 500)
-    mb += text(17, 317, 'Open project', 21, MINT, 600)
-    write('project-bridge-mobile.svg', 250, 350, mb, 'UmiBridge: connect AI to Windows with MCP tools. Open repository.')
-
-    mq = text(17, 40, 'QuietShare', 26, INK, 650)
-    mq += text(17, 84, 'Presentations.', 22, BLUE) + text(17, 116, 'Notes. Offline.', 22, BLUE)
-    mq += rect(17, 153, 216, 113, '#253744', 9)
-    mq += text(32, 187, 'Your notes', 24, BLUE, 500) + '<path d="M33 205h182m-182 16h153m-153 16h169" stroke="#63869a" stroke-width="5"/>'
-    mq += text(17, 317, 'Open project', 21, BLUE, 600)
-    write('project-quietshare-mobile.svg', 250, 350, mq, 'QuietShare: presentations, notes and optional offline transcription. Open repository.')
-
-    ma = text(17, 40, 'Automation', 26, INK, 650) + text(17, 75, 'Studio', 26, INK, 650)
-    ma += text(17, 127, 'Windows', 24, GOLD) + text(17, 160, 'workflows.', 24, GOLD)
-    ma += rect(17, 197, 216, 69, '#34352b', 9)
-    ma += text(30, 240, 'Record → Replay', 21, GOLD, 500)
-    ma += text(17, 317, 'Open project', 21, GOLD, 600)
-    write('project-automation-mobile.svg', 250, 350, ma, 'Background Automation Studio: record and replay Windows workflows. Open repository.')
-
-    mt = text(17, 39, 'The toolkit', 26, INK, 600) + text(17, 73, 'Public repo count', 18, MUTED)
-    for i, (name, count) in enumerate(counts):
-        y = 115 + i * 35
-        mt += text(17, y, name, 24, colors[i % len(colors)], 500) + text(212, y, count, 24, MUTED)
-    write('toolkit-mobile.svg', 250, 350, mt, 'Primary programming language by public repository count, not a proficiency rating')
-
-    # Real product views stay self-contained in GitHub's SVG image proxy.
-    for slug, name, descriptions, capabilities, color, caption in [
-        ('bridge', 'UmiBridge', ['ChatGPT meets your', 'Windows desktop.'], ['MCP', 'Files & terminal'], MINT, 'Actual UI · demo state'),
-        ('quietshare', 'QuietShare', ['Documents, notes and', 'optional offline transcription.'], ['Presentations', 'Offline Whisper'], BLUE, 'Actual interface'),
-        ('automation', 'Background Automation Studio', ['Record Windows actions.', 'Edit and replay workflows.'], ['Visual editor', 'Readable DSL'], GOLD, 'Workflow sample'),
-    ]:
-        payload = None
-        if slug != 'automation':
-            filename = 'work-bridge.png' if slug == 'bridge' else 'work-quietshare.png'
-            payload = base64.b64encode((ASSETS / filename).read_bytes()).decode()
-
-        for mobile in [False, True]:
-            w, h = (500, 470) if mobile else (1000, 310)
-            copy_x = 32 if mobile or slug != 'quietshare' else 622
-            image_x = 20 if mobile or slug == 'quietshare' else 438
-            image_y, image_w, image_h = (228, 460, 211) if mobile else (20, 542, 245)
-            row = rect(1, 1, w - 2, h - 2, '#111d2b', 15, LINE)
-            title_lines = ['Background Automation', 'Studio'] if slug == 'automation' else [name]
-            title_y = 51 if mobile else 65
-            title_size = 29 if mobile else 30
-            if slug == 'automation' and not mobile:
-                title_lines = ['Background', 'Automation Studio']
-            for i, line in enumerate(title_lines):
-                row += text(copy_x, title_y + i * 37, line, title_size, INK, 650)
-            desc_y = title_y + len(title_lines) * 37 + 13
-            for i, line in enumerate(descriptions):
-                row += text(copy_x, desc_y + i * 27, line, 19 if mobile else 18, MUTED)
-            cap_y = 204 if mobile else 263
-            row += text(copy_x, cap_y, capabilities[0], 15, color, 550)
-            second_x = copy_x + (146 if slug != 'bridge' else 62)
-            row += text(second_x, cap_y, capabilities[1], 15, color, 550)
-            arrow_x = 448 if mobile else (948 if slug == 'quietshare' else 374)
-            row += f'<path d="M{arrow_x} 54l17-17m-17 0h17v17" fill="none" stroke="{color}" stroke-width="2"/>'
-            if payload:
-                row += f'<defs><clipPath id="product-crop"><rect x="{image_x}" y="{image_y}" width="{image_w}" height="{image_h}" rx="10"/></clipPath></defs>'
-                alignment = 'xMidYMin slice' if slug == 'quietshare' else 'xMidYMid slice'
-                row += f'<image x="{image_x}" y="{image_y}" width="{image_w}" height="{image_h}" preserveAspectRatio="{alignment}" clip-path="url(#product-crop)" href="data:image/png;base64,{payload}"/>'
-            else:
-                row += rect(image_x, image_y, image_w, image_h, '#202620', 10)
-                row += text(image_x + 26, image_y + 38, 'Workflow sample', 16, GOLD, 550)
-                for i, command in enumerate(['MOVE 240 180', 'CLICK 240 180', 'WAIT 500']):
-                    row += f'<text x="{image_x + 26}" y="{image_y + 88 + i * 43}" fill="{INK}" font-size="25" style="font-family:monospace">{command}</text>'
-            if payload:
-                row += text(image_x + 2, image_y + image_h + 21, caption, 13 if mobile else 12, color)
-            write('project-row-' + slug + ('-mobile' if mobile else '') + '.svg', w, h, row, name + ': ' + ' '.join(descriptions) + ' ' + caption + '. Open repository.')
-
-    compact_tools = text(29, 37, 'Toolkit', 20, INK, 600)
-    compact_tools += text(29, 69, 'Primary languages across public repositories', 13, MUTED)
-    compact_tools += text(29, 106, '   /   '.join(f'{name} {count}' for name, count in counts), 17, MINT, 500)
-    write('toolkit-compact.svg', 1000, 133, compact_tools, 'Primary language by repository count: ' + ', '.join(f'{name} {count}' for name, count in counts))
-    compact_mobile = text(23, 39, 'Toolkit', 27, INK, 600) + text(23, 72, 'Primary language per public repository', 18, MUTED)
-    for i, (name, count) in enumerate(counts):
-        x, y = 23 + (i % 2) * 240, 116 + (i // 2) * 37
-        compact_mobile += text(x, y, f'{name} {count}', 22, colors[i % len(colors)], 500)
-    write('toolkit-compact-mobile.svg', 500, 135 + ((len(counts) - 1) // 2) * 37, compact_mobile, 'Primary programming language by public repository count')
 
     recent_days = days[-182:]
     recent_start = date.fromisoformat(recent_days[0]['date'])
@@ -255,66 +154,50 @@ def render(data):
             mc += text(x, 101, current.strftime('%b'), 12, MUTED)
             month_seen.add((current.year, current.month))
     mc += commit_orbit(recent_days, recent_start, 26, 114, 17.3, 15.5, 445, 12, 12)
-    mc += text(23, 259, f"{data['contribution_total']} contributions", 27, MINT, 600)
+    mc += text(23, 259, f"{data['contribution_total']} contributions", 27, INK, 600)
     mc += pixel('pixel-flame', 454, 239, 15, 20)
-    mc += text(23, 291, f"{data['active_days']} active days · full-year summary", 20, MUTED)
+    mc += text(23, 291, f"{data['active_days']} active days / full-year summary", 20, MUTED)
     mc += text(23, 325, data['date_label'], 17, MUTED)
     write('activity-mobile.svg', 500, 348, mc, 'Latest 26 weeks of real public contributions, with a full-year contribution and active-day total')
 
-    # Native README links inherit GitHub's blue link styling. Keep the closing
-    # navigation in the same visual family as the profile artwork instead.
-    def footer_tile(name, label, primary):
-        fill, ink = (MINT, '#18291c') if primary else (PANEL, INK)
-        desktop = rect(0, 0, 500, 58, fill, 8)
-        desktop += text(23, 37, label, 20, ink, 600)
-        desktop += f'<path d="M450 37l16-16m-16 0h16v16" fill="none" stroke="{ink}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'
-        write(name + '.svg', 500, 58, desktop, label)
-        mobile = rect(0, 0, 250, 76, fill, 9)
-        mobile_label = 'Build lab' if primary else 'Repositories'
-        mobile += text(16, 46, mobile_label, 22, ink, 600)
-        mobile += f'<path d="M211 46l15-15m-15 0h15v15" fill="none" stroke="{ink}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'
-        write(name + '-mobile.svg', 250, 76, mobile, label)
+    counts = sorted(data['language_counts'].items(), key=lambda item: -item[1])
+    tools = text(24, 36, 'Toolkit', 22, INK, 700)
+    tools += text(24, 69, ' / '.join(f'{name} {count}' for name, count in counts), 18, INK, 500)
+    tools += text(24, 96, 'Primary language per public repository', 12, MUTED)
+    write('toolkit-compact.svg', 1000, 116, tools, 'Primary language per public repository, not a proficiency score')
+    mt = text(22, 37, 'Toolkit', 27, INK, 700)
+    for i, (name, count) in enumerate(counts):
+        mt += text(22 + (i % 2)*240, 77+(i//2)*34, f'{name} {count}', 22, INK, 500)
+    mt += text(22, 183, 'Primary language per public repository', 16, MUTED)
+    write('toolkit-compact-mobile.svg', 500, 205, mt, 'Primary language per public repository, not a proficiency score')
+    for slug, label in [('lab', 'Explore the lab'), ('code', 'All repositories')]:
+        for mobile in (False, True):
+            w, h = (250, 94) if mobile else (500, 56)
+            fill = MINT if slug == 'lab' else BG
+            body = rect(1, 1, w-2, h-2, fill, 0, INK)
+            body += text(17, 56 if mobile else 35, 'Build lab' if mobile and slug == 'lab' else ('Repositories' if mobile else label), 23 if mobile else 21, INK, 600)
+            body += arrow(w-39, 49 if mobile else 28, size=20)
+            write('footer-'+slug+('-mobile' if mobile else '')+'.svg', w, h, body, label)
+    for mobile in (False, True):
+        w, h = (500, 90) if mobile else (1000, 56)
+        credit = text(22, 33, 'Nyan Cat via GIPHY', 19 if mobile else 15, INK)
+        credit += text(22 if mobile else 625, 70 if mobile else 33, 'Public snapshot / '+data['date_label'], 17 if mobile else 14, MUTED)
+        credit += pixel('pixel-robot', w-55, 2, 42, 42)
+        write('footer-credit'+('-mobile' if mobile else '')+'.svg', w, h, credit, 'Original Nyan Cat via GIPHY. Public snapshot: '+data['date_label'])
 
-    footer_tile('footer-lab', 'Explore the lab', True)
-    footer_tile('footer-code', 'All repositories', False)
-    credit = '<path d="M20 1h960" stroke="#35464f"/>'
-    credit += text(23, 36, 'Nyan Cat via GIPHY', 15, BLUE)
-    credit += '<path d="M206 34l11-11m-11 0h11v11" fill="none" stroke="#8cbdd1" stroke-width="1.5"/>'
-    credit += text(657, 36, 'Public snapshot · ' + data['date_label'], 13, MUTED)
-    write('footer-credit.svg', 1000, 58, credit, 'Nyan Cat artwork via GIPHY. Public GitHub snapshot: ' + data['date_label'])
-    mobile_credit = '<path d="M20 1h460" stroke="#35464f"/>'
-    mobile_credit += text(22, 37, 'Nyan Cat via GIPHY', 21, BLUE)
-    mobile_credit += '<path d="M281 35l13-13m-13 0h13v13" fill="none" stroke="#8cbdd1" stroke-width="2"/>'
-    mobile_credit += text(22, 74, 'Public snapshot · ' + data['date_label'], 19, MUTED)
-    write('footer-credit-mobile.svg', 500, 97, mobile_credit, 'Nyan Cat artwork via GIPHY. Public GitHub snapshot: ' + data['date_label'])
-
-    readme = f'''<a href="https://tdumii.github.io/TDUmii/"><img src="assets/profile-hero.svg" alt="Hi, I'm Umi. Windows tools. AI bridges. Small obsessions. Explore the full site." width="100%" /></a>
-
-### Things I build
-
-<a href="https://github.com/TDUmii/umi-bridge"><img src="assets/project-row-bridge.svg" alt="UmiBridge: connect ChatGPT to Windows with MCP tools and a local dashboard. Open repository." width="100%" /></a>
-
-<a href="https://github.com/TDUmii/QuietShare"><img src="assets/project-row-quietshare.svg" alt="QuietShare: documents, presenter notes and optional offline transcription. Open repository." width="100%" /></a>
-
-<a href="https://github.com/TDUmii/BackgroundAutomationStudio"><img src="assets/project-row-automation.svg" alt="Background Automation Studio: record Windows actions, edit a timeline and replay a workflow. Open repository." width="100%" /></a>
-
-<img src="assets/toolkit-compact.svg" alt="Primary programming languages by public repository count, not a skill score." width="100%" />
-
-![Umi's real public GitHub activity](assets/activity.svg)
-
-<p align="center"><a href="https://tdumii.github.io/TDUmii/"><picture><source media="(max-width: 600px)" srcset="assets/footer-lab-mobile.svg" /><img src="assets/footer-lab.svg" alt="Explore Umi's build lab website" width="49%" /></picture></a> <a href="https://github.com/TDUmii?tab=repositories"><picture><source media="(max-width: 600px)" srcset="assets/footer-code-mobile.svg" /><img src="assets/footer-code.svg" alt="Browse all of Umi's public repositories" width="49%" /></picture></a></p>
-
-<a href="https://giphy.com/gifs/cat-pixel-art-nyan-7lsw8RenVcjCM"><img src="assets/footer-credit.svg" alt="Original Nyan Cat artwork via GIPHY. Public snapshot: {data['date_label']}." width="100%" /></a>
-'''
-    def responsive(match):
-        name, alt = match[1], match[2]
-        mobile = name.removesuffix('.svg') + '-mobile.svg'
-        return '<picture><source media="(max-width: 600px)" srcset="assets/' + mobile + '" /><img src="assets/' + name + '" alt="' + alt + '" width="100%" /></picture>'
-    readme = re.sub(r'<img src="assets/([^"]+\.svg)" alt="([^"]*)" width="100%" />', responsive, readme)
-    readme = readme.replace("![Umi's real public GitHub activity](assets/activity.svg)", '<picture><source media="(max-width: 600px)" srcset="assets/activity-mobile.svg" /><img src="assets/activity.svg" alt="Real public GitHub activity; recent 26 weeks shown on mobile with full-year totals" width="100%" /></picture>')
-    # github.com/.../raw redirects drop query strings, defeating cache versions.
-    # Link directly to the raw host so each content hash remains in the request.
-    readme = re.sub(r'(src|srcset)="assets/([^"?]+)"', lambda match: match[1] + '="https://raw.githubusercontent.com/TDUmii/TDUmii/main/assets/' + match[2] + '?v=' + hashlib.sha256((ASSETS / match[2]).read_bytes()).hexdigest()[:10] + '"', readme)
+    def picture(name, alt, width='100%'):
+        def url(filename):
+            version = hashlib.sha256((ASSETS / filename).read_bytes()).hexdigest()[:10]
+            return f'https://raw.githubusercontent.com/TDUmii/TDUmii/main/assets/{filename}?v={version}'
+        return f'<picture><source media="(max-width: 600px)" srcset="{url(name+"-mobile.svg")}" /><img src="{url(name+".svg")}" alt="{escape(alt, quote=True)}" width="{width}" /></picture>'
+    def link(url, name, alt):
+        return f'<a href="{url}">{picture(name, alt)}</a>'
+    readme = link('https://tdumii.github.io/TDUmii/', 'profile-hero', 'Umi. Things I build.') + '\n\n'
+    readme += '<table><tr><td width="50%" valign="top">' + link('https://github.com/TDUmii/umi-bridge', 'project-row-bridge', 'UmiBridge: ChatGPT meets Windows. Open repository.') + '</td><td width="50%" valign="top">' + link('https://github.com/TDUmii/QuietShare', 'project-row-quietshare', 'QuietShare: presentations, notes, optional offline transcription. Open repository.') + '</td></tr></table>\n\n'
+    readme += link('https://github.com/TDUmii/BackgroundAutomationStudio', 'project-row-automation', 'Background Automation Studio: record, edit and replay Windows workflows. Open repository.') + '\n\n'
+    readme += picture('activity', 'Real public GitHub activity. Latest 26 weeks on mobile; dated full-year totals.') + '\n\n' + picture('toolkit-compact', 'Primary languages by public repository count.') + '\n\n'
+    readme += '<table><tr><td width="50%">'+link('https://tdumii.github.io/TDUmii/', 'footer-lab', 'Explore the lab')+'</td><td width="50%">'+link('https://github.com/TDUmii?tab=repositories', 'footer-code', 'Browse repositories')+'</td></tr></table>\n\n'
+    readme += link('https://giphy.com/gifs/cat-pixel-art-nyan-7lsw8RenVcjCM', 'footer-credit', 'Original Nyan Cat via GIPHY. Public snapshot '+data['date_label']) + '\n'
     (ROOT / 'README.md').write_text(readme, encoding='utf-8')
 
 

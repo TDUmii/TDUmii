@@ -1,0 +1,26 @@
+[
+  {
+    "file": "c1-bridge-art.png",
+    "type": "Generated illustration, not an application screenshot",
+    "creator": "Created for Umi with ImageGen",
+    "approved_direction": "C1 - Pixel Magazine",
+    "sha256": "a86ea626e84a9d19d68184416480947daafe34c7511b3b33b511d592f3a649e8",
+    "provenance": "Exact generation prompt embedded in PNG metadata"
+  },
+  {
+    "file": "c1-quiet-art.png",
+    "type": "Generated illustration, not an application screenshot",
+    "creator": "Created for Umi with ImageGen",
+    "approved_direction": "C1 - Pixel Magazine",
+    "sha256": "80defb4c0f4bdb8c6bffd1022da1e1a96c10d3a960c1ba337a6f01fee4d4374e",
+    "provenance": "Exact generation prompt embedded in PNG metadata"
+  },
+  {
+    "file": "c1-automation-art.png",
+    "type": "Generated illustration, not an application screenshot",
+    "creator": "Created for Umi with ImageGen",
+    "approved_direction": "C1 - Pixel Magazine",
+    "sha256": "9fa0957ac61a78a20fa53e9fab8819ddc804ead746c6fb531d8239c8e1c1535e",
+    "provenance": "Exact generation prompt embedded in PNG metadata"
+  }
+]

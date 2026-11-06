@@ -79,10 +79,11 @@ def paper_glint(x, y, scale=1):
 
 
 def workflow_marker(x, y, width, phase):
-    """A single process underline advances every two seconds, with a rest."""
+    """Record/Edit/Replay underline; phase is 0, 1, or 2 in an 8s loop."""
+    start, length = ((0, .8), (1.1, 1.2), (2.8, 1.5))[phase]
     return f'''<g class="moving" opacity="0" aria-hidden="true">
 <rect x="{x}" y="{y}" width="{width}" height="3" fill="{MINT}"/>
-<animate attributeName="opacity" values="1;1;0;0" keyTimes="0;.27;.31;1" calcMode="discrete" dur="6s" begin="{phase*2}s" repeatCount="indefinite"/>
+{_opacity(start, start+length, 8)}
 </g>'''
 
 
@@ -91,6 +92,71 @@ def conveyor_pixels(x, y, step):
     marks = ''.join(f'<rect x="{x+i*step}" y="{y}" width="8" height="5"/>' for i in range(3))
     return f'''<g fill="{INK}" aria-hidden="true">
 <g opacity=".16">{marks}</g>
-<g class="moving" opacity="0"><animate attributeName="opacity" values="0;0;.8;.8;0;0" keyTimes="0;.64;.67;.94;.97;1" dur="6s" repeatCount="indefinite"/>
-<g><animateTransform attributeName="transform" type="translate" values="0 0;0 0;14 0;14 0" keyTimes="0;.64;.94;1" dur="6s" repeatCount="indefinite"/>{marks}</g>
+<g class="moving" opacity="0">{_opacity(2.8, 4.3, 8, .8)}
+<g><animateTransform attributeName="transform" type="translate" values="0 0;0 0;32 0;32 0" keyTimes="0;.35;.5375;1" dur="8s" repeatCount="indefinite"/>{marks}</g>
 </g></g>'''
+
+
+def _opacity(start, end, period, peak=1):
+    """A bounded activity window with brief fades and an explicit rest."""
+    times = (0, max(.001, start)/period, (start+.06)/period,
+             (end-.06)/period, end/period, 1)
+    return f'<animate attributeName="opacity" values="0;0;{peak};{peak};0;0" keyTimes="{";".join(f"{t:.8f}" for t in times)}" dur="{period:g}s" repeatCount="indefinite"/>'
+
+
+def bridge_dialogue(outbound_path, return_path, robot_x, robot_y,
+                    terminal_x, terminal_y, size=7):
+    """Absolute scene paths and acknowledgement centers; a 6.8s dialogue."""
+    reply = escape(str(return_path), quote=True)
+    def ack(x, y, start, end):
+        return f'''<g transform="translate({x:g} {y:g})" opacity="0" fill="none" stroke="{INK}" stroke-width="2.5">
+<path d="M-10-4v-6h6M4-10h6v6M10 4v6H4M-4 10h-6V4"/>
+{_opacity(start, end, 6.8)}</g>'''
+    return f'''<g class="moving" aria-hidden="true" pointer-events="none">
+{packet_burst(outbound_path, size, 6.8)}
+{ack(robot_x, robot_y, 1.25, 1.85)}
+<g opacity="0"><rect x="{-size/2:g}" y="{-size/2:g}" width="{size:g}" height="{size:g}" fill="{AMBER}"/>
+{_opacity(1.9, 2.7, 6.8)}
+<animateMotion path="{reply}" rotate="0" keyPoints="0;0;1;1" keyTimes="0;.27941176;.39705882;1" calcMode="linear" dur="6.8s" repeatCount="indefinite"/></g>
+{ack(terminal_x, terminal_y, 2.8, 3.2)}
+</g>'''
+
+
+def projection_scene(x, y, scale=1):
+    """Local screen 0,0..100,68; presenter beam originates at 145,92.
+
+    Insert before the presenter PNG. Scene runs 2.8..4.9s of a 7s loop.
+    """
+    blocks = ''.join(f'''<rect x="{12+i*26}" y="20" width="18" height="22" fill="{AMBER}" opacity="0">{_opacity(3+i*.2, 4.9, 7)}</rect>''' for i in range(3))
+    return f'''<g class="moving" aria-hidden="true" pointer-events="none" transform="translate({x:g} {y:g}) scale({scale:g})">
+<path d="M145 92L100 0V68Z" fill="{MINT}" opacity="0">{_opacity(2.8, 4.9, 7, .18)}</path>
+<g opacity="0">{_opacity(2.8, 4.9, 7)}
+<rect width="100" height="68" fill="#f0ebe1" stroke="{INK}" stroke-width="2"/>
+<rect x="8" y="8" width="84" height="4" fill="{INK}" opacity=".25"/>
+{blocks}<path d="M12 53H88" stroke="{INK}" stroke-width="2" opacity=".2"/>
+<rect x="9" y="16" width="82" height="3" fill="{MINT}" opacity="0">{_opacity(3.4, 4.6, 7)}
+<animate attributeName="y" values="16;16;57;57" keyTimes="0;.48571429;.65714286;1" dur="7s" repeatCount="indefinite"/>
+</rect></g></g>'''
+
+
+def workflow_icon_action(x, y, phase):
+    """Add around a base icon center; phases 0 Record, 1 Edit, 2 Replay."""
+    if phase == 0:
+        shape = f'''<circle r="12" fill="none" stroke="{AMBER}" stroke-width="2.5"><animate attributeName="r" values="10;14;10;10" keyTimes="0;.05;.10;1" dur="8s" repeatCount="indefinite"/></circle>'''
+    elif phase == 1:
+        shape = f'''<path d="M-9 10H9" fill="none" stroke="{AMBER}" stroke-width="3" stroke-dasharray="18" stroke-dashoffset="18"><animate attributeName="stroke-dashoffset" values="18;18;0;0" keyTimes="0;.1375;.2875;1" dur="8s" repeatCount="indefinite"/></path>'''
+    elif phase == 2:
+        shape = f'''<g><animateTransform attributeName="transform" type="rotate" values="0;0;180;180" keyTimes="0;.35;.5375;1" dur="8s" repeatCount="indefinite"/><path d="M-11 0A11 11 0 1 1 8 8M8 8V2M8 8H2" fill="none" stroke="{AMBER}" stroke-width="2.5"/></g>'''
+    else:
+        raise ValueError('workflow phase must be 0, 1, or 2')
+    start, length = ((0, .8), (1.1, 1.2), (2.8, 1.5))[phase]
+    return f'''<g class="moving" aria-hidden="true" pointer-events="none" transform="translate({x:g} {y:g})" opacity="0">{_opacity(start, start+length, 8)}{shape}</g>'''
+
+
+def bar_glint(x, y, width, height):
+    """An ink sweep clipped by a nested viewport; never changes data width."""
+    stripe = min(12, max(2, width*.12))
+    return f'''<svg class="moving" aria-hidden="true" pointer-events="none" x="{x:g}" y="{y:g}" width="{width:g}" height="{height:g}" viewBox="0 0 {width:g} {height:g}" overflow="hidden">
+<rect x="{-stripe:g}" width="{stripe:g}" height="{height:g}" fill="{INK}" opacity="0">{_opacity(.01, 2, 10, .18)}
+<animate attributeName="x" values="{-stripe:g};{width:g};{width:g}" keyTimes="0;.2;1" dur="10s" repeatCount="indefinite"/>
+</rect></svg>'''

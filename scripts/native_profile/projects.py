@@ -1,6 +1,6 @@
 """Three independently linked project scenes for GitHub's native two-cell layout."""
 from .core import BG, GOLD, INK, MINT, arrow, image_asset, rect, text, write
-from .ornaments import conveyor_pixels, packet_burst, paper_glint, star, workflow_marker
+from .ornaments import bridge_dialogue, conveyor_pixels, paper_glint, projection_scene, star, workflow_icon_action, workflow_marker
 
 
 def scene_shelf(width, y, color=INK):
@@ -29,8 +29,11 @@ def project_panel(slug, mobile):
     body += scene_shelf(width, shelf_y)
     if bridge:
         path = 'M79 204V178H134V168H162' if mobile else 'M167 243V207H268V189H327'
-        body += packet_burst(path, size=7)
-        body += star(39 if mobile else 77, 160 if mobile else 177, 9 if mobile else 13, INK, period=5.4, offset=1.2)
+        return_path = 'M162 168H134V178H79V204' if mobile else 'M327 189H268V207H167V243'
+        body += bridge_dialogue(path, return_path, 162 if mobile else 327, 168 if mobile else 189, 79 if mobile else 167, 204 if mobile else 243)
+        body += star(39 if mobile else 77, 160 if mobile else 177, 9 if mobile else 13, INK, period=6.8, offset=1.2)
+    else:
+        body += projection_scene(18 if mobile else 64, 151 if mobile else 174, .65 if mobile else 1.35)
     body += image_asset('c1-bridge-art.png' if bridge else 'c1-quiet-art.png', art_x, art_y, art_w, art_h, True)
     if not bridge:
         body += paper_glint(155 if mobile else 295, 207 if mobile else 251, .8 if mobile else 1.15)
@@ -51,6 +54,7 @@ def workflow(x, y, mobile):
     for i, name in enumerate(['Record', 'Edit', 'Replay']):
         px = x+i*step
         body += workflow_marker(px, y+45, 70 if mobile else 61, i)
+        body += workflow_icon_action(px+10, y, i)
         body += text(px, y+36, name, 20 if mobile else 19, BG, 500)
         if i == 0:
             body += f'<circle cx="{px+10}" cy="{y}" r="8" fill="{GOLD}"/>'

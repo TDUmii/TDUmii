@@ -49,6 +49,8 @@ def weekday(items, x, y, w, mobile):
         end = trackx+trackw*row['mean']/maximum
         body += text(x, yy+7, row['label'][:3], fs, INK, 500)
         body += f'<path d="M{trackx} {yy}h{trackw}" stroke="{INK}" opacity=".12"/><g><title>{row["label"]}: {row["total"]} contributions / {row["observed_days"]} observed days = {row["mean"]:.1f}</title><path d="M{trackx} {yy}H{end}" stroke="{INK}" stroke-width="3"/><circle cx="{end}" cy="{yy}" r="6" fill="{GOLD}" stroke="{INK}"/></g>'
+        body += f'''<g class="moving" opacity="0"><circle cx="{end}" cy="{yy}" r="8" fill="none" stroke="{INK}" stroke-width="1.5"/>
+<animate attributeName="opacity" values="0;.8;.8;0;0" keyTimes="0;.025;.065;.09;1" dur="10.5s" begin="{i*1.2}s" repeatCount="indefinite"/></g>'''
         body += text(x+w-48, yy+7, f'{row["mean"]:.1f}', fs, INK, 600)
     return body + text(trackx-5, y+78+7*(43 if mobile else 34), '0', fs-2, MUTED)
 

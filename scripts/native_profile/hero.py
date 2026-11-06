@@ -1,5 +1,5 @@
 """A single owner mark and an animated Nyan night scene for the native README."""
-from .core import BG, GOLD, INK, MINT, pixel, rect, text, write
+from .core import BG, GOLD, INK, MINT, image_asset, pixel, rect, text, write
 from .ornaments import shooting_star, star
 
 
@@ -8,7 +8,22 @@ def owner_mark(x, y):
     return f'''<g transform="translate({x} {y})">
 <path d="M0 0H43V12H29V51H15V12H0Z" fill="{MINT}"/>
 <path d="M37 17H58L73 30V54L58 67H37V54H52L60 47V36L52 30H37Z" fill="{BG}"/>
-<path d="M66 0H77V11H66Z" fill="{GOLD}"/></g>'''
+<path d="M66 0H77V11H66Z" fill="{GOLD}"/>
+<g class="moving" fill="none" stroke="{GOLD}" stroke-width="2.5" stroke-dasharray="12 88" opacity="0">
+<animate attributeName="opacity" values="0;0;.85;.85;0;0" keyTimes="0;.15;.19;.60;.65;1" dur="9s" repeatCount="indefinite"/>
+<path pathLength="100" d="M0 0H43V12H29V51H15V12H0Z"><animate attributeName="stroke-dashoffset" values="0;0;-100;-100" keyTimes="0;.15;.65;1" dur="9s" repeatCount="indefinite"/></path>
+<path pathLength="100" d="M37 17H58L73 30V54L58 67H37V54H52L60 47V36L52 30H37Z"><animate attributeName="stroke-dashoffset" values="0;0;-100;-100" keyTimes="0;.15;.65;1" dur="9s" begin=".3s" repeatCount="indefinite"/></path>
+</g></g>'''
+
+
+def flying_nyan():
+    """Flight belongs to the live GIF; reduced motion keeps the original still."""
+    live = image_asset('nyan-cat.gif', 4, 113, 345, 136.62)
+    still = image_asset('nyan-cat-still.png', 4, 113, 345, 136.62).replace('class=""', 'class="nyan-still"')
+    return f'''<g class="nyan-live">
+<animateTransform attributeName="transform" type="translate" values="0 0;0 0;-6 -7;8 -3;3 5;0 0;0 0" keyTimes="0;.20;.36;.55;.70;.82;1" calcMode="spline" keySplines=".4 0 .2 1;.4 0 .2 1;.4 0 .2 1;.4 0 .2 1;.4 0 .2 1;.4 0 .2 1" dur="9s" repeatCount="indefinite"/>
+<g><animateTransform attributeName="transform" type="rotate" values="0 176.5 181.31;0 176.5 181.31;-1.8 176.5 181.31;1.2 176.5 181.31;.5 176.5 181.31;0 176.5 181.31;0 176.5 181.31" keyTimes="0;.20;.36;.55;.70;.82;1" dur="9s" repeatCount="indefinite"/>{live}</g>
+</g>{still}'''
 
 
 def night_scene(x, y, scale=1):
@@ -20,7 +35,7 @@ def night_scene(x, y, scale=1):
         scene += star(sx, sy, size, color, offset=offset)
     scene += shooting_star(32, 25, 100, 30)
     scene += pixel('pixel-planet', 180, 4, 118, 118)
-    scene += pixel('nyan-cat', 4, 113, 345, 136.62)
+    scene += flying_nyan()
     scene += f'''<g class="moving"><rect width="5" height="5" fill="{GOLD}">
 <animateMotion dur="12s" repeatCount="indefinite" path="M112 115C125 60 330 16 341 66C349 105 141 169 112 115Z"/></rect></g>'''
     return f'<g transform="translate({x} {y}) scale({scale})">{scene}</g>'

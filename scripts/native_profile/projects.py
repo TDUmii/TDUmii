@@ -20,7 +20,7 @@ def project_panel(slug, mobile):
     if mobile:
         descriptions = ['ChatGPT meets', 'Windows.'] if bridge else ['Presentations', '& notes.']
         for i, line in enumerate(descriptions):
-            body += text(17, 94+i*26, line, 21, INK, 500)
+            body += text(17, 94+i*32, line, 28, INK, 500)
         art_x, art_y, art_w, art_h, shelf_y, footer_y = 7, 135, 236, 151, 268 if bridge else 282, 313
     else:
         body += text(25, 109, 'ChatGPT meets Windows.' if bridge else 'Presentations & notes.', 22, INK, 500)
@@ -31,7 +31,7 @@ def project_panel(slug, mobile):
     if mobile:
         lines = ['Local dashboard', 'One-click setup'] if bridge else ['Optional offline', 'transcription']
         for i, line in enumerate(lines):
-            body += text(17, footer_y+5+i*26, line, 20, INK, 500)
+            body += text(17, footer_y+5+i*28, line, 25, INK, 500)
     else:
         body += text(25, footer_y, 'Local dashboard / One-click setup' if bridge else 'Optional offline transcription', 18, INK, 500)
     return width, height, body

@@ -58,10 +58,10 @@ def render(data):
     mc += commit_orbit(recent_days, recent_start, 26, 153, 17.3, 15.5, 445, 12, 12)
     mc += '<path d="M22 271h456" stroke="' + INK + '"/>'
     mc += text(22, 312, data['contribution_total'], 36, INK, 700)
-    mc += text(132, 309, 'contributions / full snapshot', 17, MUTED)
+    mc += text(132, 309, 'contributions / full snapshot', 20, MUTED)
     for i, (value, label, _) in enumerate(metrics):
         x = 22 + i * 159
         mc += text(x, 356, value, 27, INK, 700)
-        mc += text(x, 380, label, 14, MUTED)
-    mc += text(22, 421, 'PUBLIC GITHUB / ' + data['date_label'], 13, MUTED)
+        mc += text(x, 380, label, 19, MUTED)
+    mc += text(22, 421, 'PUBLIC GITHUB / ' + data['date_label'], 18, MUTED)
     write('activity-mobile.svg', 500, 444, mc, 'Latest 26 weeks of real public contributions, with full-snapshot totals and dated summary')

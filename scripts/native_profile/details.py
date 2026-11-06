@@ -28,7 +28,8 @@ def render(data):
             w, h = (250, 94) if mobile else (500, 56)
             fill = MINT if slug == 'lab' else BG
             body = rect(1, 1, w-2, h-2, fill, 0, INK)
-            body += text(17, 56 if mobile else 35, label if slug == 'lab' else ('Repositories' if mobile else label), 26 if mobile else 21, INK, 600)
+            caption = 'Source code' if mobile and slug == 'lab' else ('Repositories' if mobile else label)
+            body += text(17, 56 if mobile else 35, caption, 26 if mobile else 21, INK, 600)
             body += arrow(w-39, 49 if mobile else 28, size=20)
             write('footer-'+slug+('-mobile' if mobile else '')+'.svg', w, h, body, label)
     for mobile in (False, True):

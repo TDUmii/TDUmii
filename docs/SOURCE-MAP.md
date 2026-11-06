@@ -35,4 +35,6 @@ python scripts/check_assets.py
 
 `assets/profile-data.json` is the dated public-data input. Generated SVGs and README are committed so GitHub can render them directly. Edit the modules and rebuild instead of editing the large base64 SVG outputs.
 
+After committing generated artwork, run the renderer with `--asset-ref COMMIT_SHA`, replacing `COMMIT_SHA` with that commit. Commit the resulting README. This pins every native image to immutable artwork, so GitHub cannot serve an older branch image under a new cache query. The default `main` reference is convenient while editing locally.
+
 The companion website remains in `index.html`, `styles.css` and `profile.js`. Its separate motion controls do not run inside the GitHub README.

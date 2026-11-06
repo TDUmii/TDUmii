@@ -1,14 +1,17 @@
 """GitHub-native readme section."""
 import hashlib
+import re
 from html import escape
 from .core import ASSETS, ROOT
 
 
-def render(data):
+def render(data, asset_ref='main'):
+    if not re.fullmatch(r'main|[0-9a-f]{7,40}', asset_ref):
+        raise ValueError('asset_ref must be main or a Git commit SHA')
     def picture(name, alt, width='100%'):
         def url(filename):
             version = hashlib.sha256((ASSETS / filename).read_bytes()).hexdigest()[:10]
-            return f'https://raw.githubusercontent.com/TDUmii/TDUmii/main/assets/{filename}?v={version}'
+            return f'https://raw.githubusercontent.com/TDUmii/TDUmii/{asset_ref}/assets/{filename}?v={version}'
         return f'<picture><source media="(max-width: 600px)" srcset="{url(name+"-mobile.svg")}" /><img src="{url(name+".svg")}" alt="{escape(alt, quote=True)}" width="{width}" /></picture>'
     def link(url, name, alt):
         return f'<a href="{url}">{picture(name, alt)}</a>'

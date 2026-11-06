@@ -2,6 +2,7 @@
 from . import hero, projects, activity, details, readme
 
 
-def render(data):
-    for section in (hero, projects, activity, details, readme):
+def render(data, asset_ref='main'):
+    for section in (hero, projects, activity, details):
         section.render(data)
+    readme.render(data, asset_ref)

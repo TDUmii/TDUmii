@@ -18,7 +18,7 @@ assert sum(day['count'] for day in data['contributions']) == data['contribution_
 assert sum(day['count'] > 0 for day in data['contributions']) == data['active_days']
 
 readme = (ROOT / 'README.md').read_text(encoding='utf-8')
-assert readme.count('<picture>') == 9
+assert readme.count('<picture>') == 11
 for repo in ['umi-bridge', 'QuietShare', 'BackgroundAutomationStudio']:
     assert readme.count('href="https://github.com/TDUmii/' + repo + '"') == 1
 assert 'aoe' not in readme.lower()

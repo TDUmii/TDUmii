@@ -62,14 +62,22 @@ def label(day):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--date', help='Snapshot date in YYYY-MM-DD form')
+    parser.add_argument('--data-only', action='store_true', help='Refresh public JSON/JS without rendering artwork')
     args = parser.parse_args()
     today = date.fromisoformat(args.date) if args.date else datetime.now(timezone(timedelta(hours=7))).date()
-    profile = json.loads(fetch(f'https://api.github.com/users/{USER}'))
-    repos = json.loads(fetch(f'https://api.github.com/users/{USER}/repos?per_page=100&type=owner&sort=updated'))
+    raw_profile = fetch(f'https://api.github.com/users/{USER}')
+    raw_repos = fetch(f'https://api.github.com/users/{USER}/repos?per_page=100&type=owner&sort=updated')
+    profile = json.loads(raw_profile)
+    repos = json.loads(raw_repos)
     if profile['login'] != USER or len(repos) != profile['public_repos'] or any(repo['private'] for repo in repos):
         raise ValueError('Public repository snapshot is incomplete')
     calendar = Calendar()
-    calendar.feed(fetch(f'https://github.com/users/{USER}/contributions'))
+    raw_calendar = fetch(f'https://github.com/users/{USER}/contributions')
+    review = ROOT / 'output' / 'analytics-review'
+    review.mkdir(parents=True, exist_ok=True)
+    for name, payload in [('profile-source.json', raw_profile), ('repos-source.json', raw_repos), ('calendar-source.html', raw_calendar)]:
+        (review / name).write_text(payload, encoding='utf-8')
+    calendar.feed(raw_calendar)
     days = calendar.result(today)
     languages = list(dict.fromkeys(repo['language'] for repo in repos if not repo['fork'] and repo['language']))
     selected = ['umi-bridge', 'QuietShare', 'BackgroundAutomationStudio']
@@ -77,8 +85,18 @@ def main():
     active = [day for day in days if day['count'] > 0]
     recent = [day for day in days if date.fromisoformat(day['date']) >= today - timedelta(days=29)]
     data = {'login': USER, 'date': today.isoformat(), 'date_label': label(today), 'public_repos': profile['public_repos'], 'stars': sum(repo['stargazers_count'] for repo in repos), 'languages': languages, 'language_counts': counts, 'active_days': len(active), 'recent_contributions': sum(day['count'] for day in recent), 'best_day': max(day['count'] for day in days), 'contribution_total': sum(day['count'] for day in days), 'contributions': days, 'projects': [{k: repo[k] for k in ['name', 'html_url', 'language', 'description', 'stargazers_count', 'updated_at']} for name in selected for repo in repos if repo['name'] == name], 'sources': [f'https://api.github.com/users/{USER}', f'https://api.github.com/users/{USER}/repos', f'https://github.com/users/{USER}/contributions']}
-    from render_profile import render
-    render(data)
+    for project in data['projects']:
+        repo = next(repo for repo in repos if repo['name'] == project['name'])
+        project.update({key: repo[key] for key in ('forks_count', 'pushed_at', 'archived')})
+    data['repo_summary'] = {'original': sum(not repo['fork'] for repo in repos),
+                            'fork': sum(repo['fork'] for repo in repos),
+                            'archived': sum(repo['archived'] for repo in repos),
+                            'total_forks': sum(repo['forks_count'] for repo in repos)}
+    from profile_metrics import analyze
+    analyze(data)
+    if not args.data_only:
+        from render_profile import render
+        render(data)
     (ASSETS / 'profile-data.json').write_text(json.dumps(data, indent=2), encoding='utf-8')
     (ASSETS / 'profile-data.js').write_text('window.UMI_PROFILE=' + json.dumps(data) + ';', encoding='utf-8')
     print(json.dumps({'user': USER, 'repos': data['public_repos'], 'contributions': data['contribution_total'], 'calendar_days': len(days), 'date': today.isoformat()}))

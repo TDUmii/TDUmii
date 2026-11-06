@@ -23,7 +23,7 @@ def render(data):
     write('calendar-static.svg', 1000, 170, '<g transform="translate(0,-64)">' + cells + '</g>', 'Real public GitHub calendar, static reduced-motion edition')
     # Header flame keeps the original 15:20 GIF ratio at a visible 2x size.
     activity = pixel('pixel-flame', 28, 43, 30, 40)
-    activity += text(72, 76, 'Commit orbit', 32, INK, 700)
+    activity += text(72, 76, 'Contribution orbit', 32, INK, 700)
     activity += text(733, 49, data['contribution_total'], 35, INK, 700)
     activity += text(733, 73, 'contributions in this snapshot', 12, MUTED)
     # Move the exact original calendar and active-cell orbit together.
@@ -44,7 +44,7 @@ def render(data):
     recent_days = days[-182:]
     recent_start = date.fromisoformat(recent_days[0]['date'])
     mc = pixel('pixel-flame', 22, 42, 30, 40)
-    mc += text(68, 75, 'Commit orbit', 31, INK, 700)
+    mc += text(68, 75, 'Contribution orbit', 31, INK, 700)
     mc += text(23, 112, 'Latest 26 weeks', 18, MUTED)
     month_seen = set()
     for day in recent_days:

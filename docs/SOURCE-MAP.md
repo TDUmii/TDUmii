@@ -9,6 +9,7 @@ This repository builds the GitHub profile README and its self-contained artwork.
 | [hero.py](../scripts/native_profile/hero.py) | Owner monogram, headline, original Nyan and planet scene |
 | [projects.py](../scripts/native_profile/projects.py) | Three project compositions, purposes and capability rails |
 | [activity.py](../scripts/native_profile/activity.py) | Flame placement, dated calendar, active-date orbit and summaries |
+| [analytics.py](../scripts/native_profile/analytics.py) | Monthly bars, weekday averages, repository comparison and active-date share |
 | [details.py](../scripts/native_profile/details.py) | Language distribution and footer actions |
 | [readme.py](../scripts/native_profile/readme.py) | GitHub picture elements, links and cache versions |
 | [core.py](../scripts/native_profile/core.py) | Shared SVG primitives, embedded media and reduced-motion fallbacks |
@@ -35,6 +36,10 @@ python scripts/check_assets.py
 ```
 
 `assets/profile-data.json` is the dated public-data input. Generated SVGs and README are committed so GitHub can render them directly. Edit the modules and rebuild instead of editing the large base64 SVG outputs.
+
+[profile_metrics.py](../scripts/profile_metrics.py) derives the chart data. It preserves zero-count dates, flags incomplete calendar months and divides weekday totals by their observed date counts. Run `python scripts/test_profile_metrics.py` to check date boundaries and reconciliations. Repository metadata comes from the unauthenticated public API; the calendar contains publicly displayed contribution totals.
+
+Use `python scripts/update_profile.py --data-only` to refresh the inputs without rendering. `--date YYYY-MM-DD` selects the snapshot cutoff. Raw public responses are retained under the ignored `output/analytics-review` directory for verification.
 
 After committing generated artwork, run the renderer with `--asset-ref COMMIT_SHA`, replacing `COMMIT_SHA` with that commit. Commit the resulting README. This pins every native image to immutable artwork, so GitHub cannot serve an older branch image under a new cache query. The default `main` reference is convenient while editing locally.
 

@@ -1,0 +1,38 @@
+# Source map
+
+This repository builds the GitHub profile README and its self-contained artwork. The native profile works directly on GitHub; it does not require the companion website or JavaScript.
+
+## Edit the native GitHub profile
+
+| Module | What it controls |
+| --- | --- |
+| [hero.py](../scripts/native_profile/hero.py) | Owner monogram, headline, original Nyan and planet scene |
+| [projects.py](../scripts/native_profile/projects.py) | Three project compositions, purposes and capability rails |
+| [activity.py](../scripts/native_profile/activity.py) | Flame placement, dated calendar, active-date orbit and summaries |
+| [details.py](../scripts/native_profile/details.py) | Language distribution and footer actions |
+| [readme.py](../scripts/native_profile/readme.py) | GitHub picture elements, links and cache versions |
+| [core.py](../scripts/native_profile/core.py) | Shared SVG primitives, embedded media and reduced-motion fallbacks |
+
+[render_profile.py](../scripts/render_profile.py) is the small command-line entry point. Each section exposes `render(data)`. Desktop and mobile layouts live together in their section, so changing a component does not require searching one large renderer.
+
+## Edit sprite motion
+
+The [sprite_motion](../scripts/sprite_motion) package contains one module per character: `bridge.py`, `quiet.py` and `automation.py`. `core.py` embeds the original PNG and provides shared SVG construction. The package entry point writes the three rigs and their source manifest.
+
+Only the native SVG geometry and animation change. The approved PNG artwork and original downloaded GIFs retain their exact bytes. Still images provide the system reduced-motion state.
+
+## Build and check
+
+Run from the repository root with Python 3. No third-party Python packages are required:
+
+```powershell
+python scripts/build_sprite_motion.py
+python scripts/render_profile.py
+python scripts/build_offline.py
+python scripts/native_profile/check.py
+python scripts/check_assets.py
+```
+
+`assets/profile-data.json` is the dated public-data input. Generated SVGs and README are committed so GitHub can render them directly. Edit the modules and rebuild instead of editing the large base64 SVG outputs.
+
+The companion website remains in `index.html`, `styles.css` and `profile.js`. Its separate motion controls do not run inside the GitHub README.

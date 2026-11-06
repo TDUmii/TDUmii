@@ -6,6 +6,7 @@ import base64
 import hashlib
 import json
 import re
+from xml.etree import ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
 ASSETS = ROOT / 'assets'
@@ -48,6 +49,15 @@ def commit_orbit(days, start, x0, y0, dx, dy, width, cell=12, height=11):
 
 
 def image_asset(name, x, y, w, h, moving=False):
+    if moving and name.startswith('c1-') and name.endswith('-art.png'):
+        # Inline the complete rig, not an SVG-as-image indirection: GitHub keeps
+        # its native SMIL motion and the inner reduced-motion static fallback.
+        motion = ASSETS / name.replace('-art.png', '-motion.svg')
+        tree = ET.parse(motion).getroot()
+        tree.attrib.update(x=str(x), y=str(y), width=str(w), height=str(h), preserveAspectRatio='xMidYMid meet')
+        ET.register_namespace('', 'http://www.w3.org/2000/svg')
+        ET.register_namespace('xlink', 'http://www.w3.org/1999/xlink')
+        return ET.tostring(tree, encoding='unicode')
     payload = base64.b64encode((ASSETS / name).read_bytes()).decode()
     mime = 'image/gif' if name.endswith('.gif') else 'image/png'
     return f'<image class="{("art" if moving else "")}" x="{x}" y="{y}" width="{w}" height="{h}" preserveAspectRatio="xMidYMid meet" href="data:{mime};base64,{payload}"/>'

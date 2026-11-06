@@ -2,7 +2,6 @@
 from pathlib import Path
 import base64
 import hashlib
-import json
 import re
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -32,7 +31,9 @@ html = re.sub(r'<link rel="stylesheet" href="styles\.css(?:\?[^"]*)?">', lambda 
 html = re.sub(r'(src|srcset|href)="(assets/[^"? ]+)(?:\?[^" ]*)?"', lambda match: match[1] + '="' + assets.get(match[2], match[2]) + '"', html)
 data = (ROOT / 'assets/profile-data.js').read_text(encoding='utf-8')
 html = re.sub(r'<script src="assets/profile-data\.js(?:\?[^"]*)?"></script>', lambda match: '<script>' + data + '</script>', html)
-code = 'window.UMI_ASSETS=' + json.dumps(assets).replace('<', '\\u003c') + ';\n' + script
+# Dynamic paths in data-live-src/data-still-src are embedded above too.
+# Avoid duplicating every large sprite in a second JSON asset dictionary.
+code = script
 html = re.sub(r'<script src="profile\.js(?:\?[^"]*)?"></script>', lambda match: '<script>' + code + '</script>', html)
 out = ROOT / 'output'
 out.mkdir(exist_ok=True)

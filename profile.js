@@ -18,8 +18,8 @@ if(data){
 const calendar=document.querySelector('.activity-scroll');
 function alignCalendar(){calendar.scrollLeft=calendar.scrollWidth;document.querySelector('.calendar-cue').hidden=calendar.scrollWidth<=calendar.clientWidth+1;}
 const calendarImage=document.querySelector('.activity-image');
-const gifs=[...document.querySelectorAll('[data-gif]')];
-const inView=new Map(gifs.map(img=>[img,true]));
+const motionImages=[...document.querySelectorAll('[data-gif],[data-animated-sprite]')];
+const inView=new Map(motionImages.map(img=>[img,true]));
 const toggle=document.querySelector('.motion-toggle');
 const reduce=window.matchMedia('(prefers-reduced-motion: reduce)');
 let userPaused=false,calendarVisible=true;
@@ -27,7 +27,7 @@ function setMotionImage(img,stop){const path=stop?img.dataset.stillSrc:img.datas
 function updateMotion(){
  const paused=userPaused||reduce.matches||document.hidden;
  document.body.dataset.motion=paused?'paused':'running';
- gifs.forEach(img=>{const stop=paused||!inView.get(img);setMotionImage(img,stop);img.closest('.sprite').classList.toggle('motion-offscreen',stop);});
+ motionImages.forEach(img=>{const stop=paused||!inView.get(img);setMotionImage(img,stop);(img.closest('.sprite')||img).classList.toggle('motion-offscreen',stop);});
  setMotionImage(calendarImage,paused||!calendarVisible);
  toggle.disabled=reduce.matches;toggle.setAttribute('aria-pressed',String(userPaused||reduce.matches));
  toggle.setAttribute('aria-label',reduce.matches?'Animations reduced by your system setting':userPaused?'Resume animations':'Pause animations');
@@ -36,5 +36,5 @@ function updateMotion(){
 }
  toggle.addEventListener('click',()=>{if(!reduce.matches){userPaused=!userPaused;updateMotion();}});
  reduce.addEventListener('change',updateMotion);document.addEventListener('visibilitychange',updateMotion);
- if('IntersectionObserver'in window){const observer=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(inView.has(entry.target))inView.set(entry.target,entry.isIntersecting);if(entry.target===calendar)calendarVisible=entry.isIntersecting;});updateMotion();},{threshold:.02});[calendar,...gifs].forEach(node=>observer.observe(node));}
+ if('IntersectionObserver'in window){const observer=new IntersectionObserver(entries=>{entries.forEach(entry=>{if(inView.has(entry.target))inView.set(entry.target,entry.isIntersecting);if(entry.target===calendar)calendarVisible=entry.isIntersecting;});updateMotion();},{threshold:.02});[calendar,...motionImages].forEach(node=>observer.observe(node));}
  window.addEventListener('resize',alignCalendar,{passive:true});alignCalendar();updateMotion();

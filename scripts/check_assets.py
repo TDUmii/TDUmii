@@ -10,6 +10,9 @@ import re
 ROOT = Path(__file__).resolve().parents[1]
 ASSETS = ROOT / 'assets'
 NS = {'svg': 'http://www.w3.org/2000/svg'}
+XLINK = '{http://www.w3.org/1999/xlink}href'
+def image_href(node):
+    return node.attrib.get('href', node.attrib.get(XLINK, ''))
 data = json.loads((ASSETS / 'profile-data.json').read_text(encoding='utf-8'))
 assert sum(day['count'] for day in data['contributions']) == data['contribution_total']
 assert sum(day['count'] > 0 for day in data['contributions']) == data['active_days']
@@ -29,7 +32,7 @@ for ref in re.findall(r'(?:src|srcset)="([^"]+)"', readme):
     roots[path.name] = ET.parse(path)
     assert chr(194) + chr(183) not in path.read_text(encoding='utf-8'), 'Broken text encoding in native art'
     for image in roots[path.name].findall('.//svg:image', NS):
-        assert image.attrib['href'].startswith('data:image/'), 'Native art must be self-contained'
+        assert image_href(image).startswith('data:image/'), 'Native art must be self-contained'
 
 for name, compact in [('activity.svg', False), ('calendar.svg', False), ('activity-mobile.svg', True)]:
     tree = ET.parse(ASSETS / name)
@@ -44,7 +47,7 @@ assert 'orbit-motion' not in (ASSETS / 'calendar-static.svg').read_text()
 all_gifs = set()
 for name, tree in roots.items():
     for image in tree.findall('.//svg:image', NS):
-        href = image.attrib['href']
+        href = image_href(image)
         if href.startswith('data:image/gif;base64,'):
             all_gifs.add(base64.b64decode(href.split(',', 1)[1]))
             assert image.attrib['preserveAspectRatio'] == 'xMidYMid meet'
@@ -68,7 +71,7 @@ for source in json.loads((ASSETS / 'c1-art-source.json').read_text()):
         tree = roots['project-row-' + slug + suffix + '.svg']
         images = tree.findall('.//svg:image', NS)
         assert len(images) == 1
-        assert base64.b64decode(images[0].attrib['href'].split(',', 1)[1]) == path.read_bytes(), 'Native art payload differs from its approved illustration'
+        assert base64.b64decode(image_href(images[0]).split(',', 1)[1]) == path.read_bytes(), 'Native art payload differs from its approved illustration'
 for name in ['footer-lab', 'footer-code']:
     for suffix, width in [('', 414.5), ('-mobile', 150.9)]:
         root = roots[name + suffix + '.svg'].getroot()
@@ -77,3 +80,18 @@ for name in ['footer-lab', 'footer-code']:
 print('PASS: real dated totals, active-date orbit masks, static calendar and reduced-motion fallbacks.')
 print('PASS: three independent native project links, exact original GIFs/illustrations and versioned self-contained SVGs.')
 print('PASS: native footer action dimensions and original download provenance.')
+
+motion = json.loads((ASSETS / 'c1-motion-source.json').read_text())
+for sprite in motion['sprites']:
+    source = ASSETS / sprite['source']
+    assert hashlib.sha256(source.read_bytes()).hexdigest() == sprite['source_sha256']
+    path = ASSETS / sprite['output']
+    tree = ET.parse(path)
+    images = tree.findall('.//svg:image', NS)
+    assert len(images) == 1, 'A rig must embed the original art only once'
+    assert base64.b64decode(image_href(images[0]).split(',', 1)[1]) == source.read_bytes()
+    assert tree.find('.//svg:g[@class="sprite-motion"]', NS) is not None
+    assert tree.find('.//svg:use[@class="sprite-still"]', NS) is not None
+    assert tree.findall('.//svg:animateTransform', NS) or tree.findall('.//svg:animate', NS), 'Missing internal sprite motion'
+    assert 'prefers-reduced-motion:reduce' in path.read_text(encoding='utf-8')
+print('PASS: three internal sprite rigs, unchanged PNG payloads and native reduced-motion stills.')

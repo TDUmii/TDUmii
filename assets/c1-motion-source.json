@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "generator": "scripts/build_sprite_motion.py",
+  "method": "Original PNG payload plus SVG source-part rigs; no raster edits",
+  "sprites": [
+    {
+      "source": "c1-bridge-art.png",
+      "output": "c1-bridge-motion.svg",
+      "source_sha256": "a86ea626e84a9d19d68184416480947daafe34c7511b3b33b511d592f3a649e8",
+      "width": 1683,
+      "height": 935,
+      "loop_seconds": 3.2
+    },
+    {
+      "source": "c1-quiet-art.png",
+      "output": "c1-quiet-motion.svg",
+      "source_sha256": "80defb4c0f4bdb8c6bffd1022da1e1a96c10d3a960c1ba337a6f01fee4d4374e",
+      "width": 1561,
+      "height": 1008,
+      "loop_seconds": 3.8
+    },
+    {
+      "source": "c1-automation-art.png",
+      "output": "c1-automation-motion.svg",
+      "source_sha256": "9fa0957ac61a78a20fa53e9fab8819ddc804ead746c6fb531d8239c8e1c1535e",
+      "width": 1610,
+      "height": 977,
+      "loop_seconds": 8
+    }
+  ]
+}

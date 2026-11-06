@@ -72,7 +72,7 @@ def render(data):
         months = metrics['monthly'][-6:] if mobile else metrics['monthly']
         body = motion() + text(26, 46, 'A rhythm of building', 28 if mobile else 30, INK, 700)
         body += text(26, 81, f'{p["start"]} to {p["end"]}', 22 if mobile else 17, MUTED)
-        body += ornament(w-160, 40, 100)
+        body += ornament(w-(86 if mobile else 160), 40, 60 if mobile else 100)
         body += monthly(months, 26, 139, 448 if mobile else 565, 320, mobile)
         if mobile:
             body += text(26, 478, f'Shown: {months[0]["month"]} to {months[-1]["month"]}', 21, MUTED)

@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "generator": "scripts/build_sprite_motion.py",
   "method": "Original PNG payload plus SVG source-part rigs; no raster edits",
   "sprites": [
@@ -9,7 +9,7 @@
       "source_sha256": "a86ea626e84a9d19d68184416480947daafe34c7511b3b33b511d592f3a649e8",
       "width": 1683,
       "height": 935,
-      "loop_seconds": 3.2
+      "loop_seconds": 4.8
     },
     {
       "source": "c1-quiet-art.png",
@@ -17,7 +17,7 @@
       "source_sha256": "80defb4c0f4bdb8c6bffd1022da1e1a96c10d3a960c1ba337a6f01fee4d4374e",
       "width": 1561,
       "height": 1008,
-      "loop_seconds": 3.8
+      "loop_seconds": 5.2
     },
     {
       "source": "c1-automation-art.png",

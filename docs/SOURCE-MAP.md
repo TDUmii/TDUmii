@@ -12,6 +12,7 @@ This repository builds the GitHub profile README and its self-contained artwork.
 | [details.py](../scripts/native_profile/details.py) | Language distribution and footer actions |
 | [readme.py](../scripts/native_profile/readme.py) | GitHub picture elements, links and cache versions |
 | [core.py](../scripts/native_profile/core.py) | Shared SVG primitives, embedded media and reduced-motion fallbacks |
+| [ornaments.py](../scripts/native_profile/ornaments.py) | Pixel stars, meteors, message packets, paper glints and process accents |
 
 [render_profile.py](../scripts/render_profile.py) is the small command-line entry point. Each section exposes `render(data)`. Desktop and mobile layouts live together in their section, so changing a component does not require searching one large renderer.
 

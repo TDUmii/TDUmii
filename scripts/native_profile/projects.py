@@ -1,5 +1,6 @@
 """Three independently linked project scenes for GitHub's native two-cell layout."""
 from .core import BG, GOLD, INK, MINT, arrow, image_asset, rect, text, write
+from .ornaments import conveyor_pixels, packet_burst, paper_glint, star, workflow_marker
 
 
 def scene_shelf(width, y, color=INK):
@@ -26,7 +27,13 @@ def project_panel(slug, mobile):
         body += text(25, 109, 'ChatGPT meets Windows.' if bridge else 'Presentations & notes.', 22, INK, 500)
         art_x, art_y, art_w, art_h, shelf_y, footer_y = 24, 132, 452, 246, 360, 393
     body += scene_shelf(width, shelf_y)
+    if bridge:
+        path = 'M79 204V178H134V168H162' if mobile else 'M167 243V207H268V189H327'
+        body += packet_burst(path, size=7)
+        body += star(39 if mobile else 77, 160 if mobile else 177, 9 if mobile else 13, INK, period=5.4, offset=1.2)
     body += image_asset('c1-bridge-art.png' if bridge else 'c1-quiet-art.png', art_x, art_y, art_w, art_h, True)
+    if not bridge:
+        body += paper_glint(155 if mobile else 295, 207 if mobile else 251, .8 if mobile else 1.15)
     body += f'<path d="M17 {footer_y-19}H{width-17}" stroke="{INK}" stroke-width="1"/>'
     if mobile:
         lines = ['Local dashboard', 'One-click setup'] if bridge else ['Optional offline', 'transcription']
@@ -43,6 +50,7 @@ def workflow(x, y, mobile):
     body = ''
     for i, name in enumerate(['Record', 'Edit', 'Replay']):
         px = x+i*step
+        body += workflow_marker(px, y+45, 70 if mobile else 61, i)
         body += text(px, y+36, name, 20 if mobile else 19, BG, 500)
         if i == 0:
             body += f'<circle cx="{px+10}" cy="{y}" r="8" fill="{GOLD}"/>'
@@ -78,6 +86,7 @@ def render(data):
             body += arrow(450, 216, BG)
             body += image_asset('c1-automation-art.png', 735, 36, 260, 210, True)
         body += f'<path d="M{180 if mobile else 400} {height}l22-22H{width}v22Z" fill="{GOLD}"/>'
+        body += conveyor_pixels(249 if mobile else 468, height-13, 80 if mobile else 174)
         write('project-row-automation'+('-mobile' if mobile else '')+'.svg', width, height, body,
               'Background Automation Studio. Record, edit and replay Windows workflows. Open repository.')
 

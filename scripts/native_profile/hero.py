@@ -1,5 +1,6 @@
 """A single owner mark and an animated Nyan night scene for the native README."""
 from .core import BG, GOLD, INK, MINT, pixel, rect, text, write
+from .ornaments import shooting_star, star
 
 
 def owner_mark(x, y):
@@ -15,6 +16,9 @@ def night_scene(x, y, scale=1):
     scene = '<ellipse cx="224" cy="91" rx="119" ry="44" transform="rotate(-24 224 91)" fill="none" stroke="#476168" stroke-width="1.5"/>'
     for sx, sy, size in [(13, 31, 5), (89, 68, 3), (348, 22, 6), (323, 200, 4), (42, 184, 4)]:
         scene += rect(sx, sy, size, size, MINT if size < 5 else GOLD, 0)
+    for sx, sy, size, color, offset in [(32, 89, 12, GOLD, 0), (145, 18, 8, MINT, 1.6), (340, 104, 10, GOLD, 3.2)]:
+        scene += star(sx, sy, size, color, offset=offset)
+    scene += shooting_star(32, 25, 100, 30)
     scene += pixel('pixel-planet', 180, 4, 118, 118)
     scene += pixel('nyan-cat', 4, 113, 345, 136.62)
     scene += f'''<g class="moving"><rect width="5" height="5" fill="{GOLD}">

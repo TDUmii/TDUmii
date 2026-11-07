@@ -17,7 +17,9 @@ def project_panel(slug, mobile):
     else:
         body += f'<path d="M1 17h27L42 1H{width-1}V{height-1}H1Z" fill="none" stroke="{INK}" stroke-width="2"/>'
     body += arrow(width-45, 30, size=23)
-    body += maker_mark('bridge' if bridge else 'quietshare', width-27 if mobile else width-31, 3, 20 if mobile else 24)
+    # Keep the seal clear of the arrow's rising diagonal, not only its baseline.
+    body += maker_mark('bridge' if bridge else 'quietshare', width-77 if mobile else width-80,
+                       3 if mobile else 18, 20 if mobile else 24)
     title = 'UmiBridge' if bridge else 'QuietShare'
     body += text(17 if mobile else 25, 58 if mobile else 72, title, 33 if mobile else 49, INK, 800)
     if mobile:

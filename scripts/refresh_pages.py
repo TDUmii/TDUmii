@@ -1,4 +1,4 @@
-"""Request and verify a legacy GitHub Pages build of the current commit."""
+"""Request a legacy build and verify the exact commit's Pages deployment."""
 import json
 import os
 import re
@@ -8,9 +8,9 @@ from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
 
-def request_build_api(repository, token, method='GET', timeout=30):
-    request = Request('https://api.github.com/repos/' + repository + '/pages/builds' +
-                      ('/latest' if method == 'GET' else ''),
+def request_build_api(repository, token, head, method='GET', timeout=30):
+    endpoint = '/pages/builds' if method == 'POST' else '/pages/deployments/' + head
+    request = Request('https://api.github.com/repos/' + repository + endpoint,
                       data=b'{}' if method == 'POST' else None, method=method,
                       headers={'Authorization': 'Bearer ' + token,
                                'Accept': 'application/vnd.github+json',
@@ -20,7 +20,7 @@ def request_build_api(repository, token, method='GET', timeout=30):
         with urlopen(request, timeout=timeout) as response:
             result = json.load(response)
             if not isinstance(result, dict):
-                raise RuntimeError('Pages API returned an invalid build response')
+                raise RuntimeError('Pages API returned an invalid deployment response')
             return result
     except HTTPError as error:
         if method == 'GET' and error.code == 404:
@@ -43,20 +43,22 @@ def refresh(repository, token, head, api=request_build_api, sleep=time.sleep,
         remaining = deadline - clock()
         if remaining <= 0:
             raise RuntimeError('Timed out waiting for Pages to build the current commit')
-        return api(repository, token, method, timeout=min(30, remaining))
-    build = call()
-    if build.get('commit') == head and build.get('status') == 'built':
-        print('Pages already built the current commit.')
+        return api(repository, token, head, method, timeout=min(30, remaining))
+    deployment = call()
+    if deployment.get('status') == 'succeed':
+        print('Pages already deployed the current commit.')
         return
     call('POST')
     while clock() < deadline:
-        build = call()
-        if build.get('commit') == head:
-            if build.get('status') == 'built':
-                print('Pages built current commit: ' + head)
-                return
-            if build.get('status') == 'errored':
-                raise RuntimeError('Pages build failed for the current commit')
+        deployment = call()
+        status = deployment.get('status', '')
+        if status == 'succeed':
+            print('Pages deployed current commit: ' + head)
+            return
+        if status in {'deployment_failed', 'deployment_content_failed',
+                      'deployment_cancelled', 'deployment_attempt_error',
+                      'failed', 'failure', 'errored', 'cancelled', 'canceled'}:
+            raise RuntimeError('Pages deployment failed for the current commit: ' + status)
         sleep(min(5, max(0, deadline - clock())))
     raise RuntimeError('Timed out waiting for Pages to build the current commit')
 

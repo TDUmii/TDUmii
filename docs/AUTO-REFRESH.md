@@ -33,10 +33,14 @@ organization token policies may still deny its push; check the failed
 Actions log instead of supplying a personal token.
 
 The job requests a legacy GitHub Pages build explicitly because a bot-token
-push does not trigger the branch-based Pages build. It waits for the final
-published README commit to finish building, and fails on a Pages error or a
-five-minute timeout. This check also runs after unchanged input, so a manual
-rerun can recover a previously failed Pages build without another data commit.
+push does not trigger the branch-based Pages build. It checks the deployment
+status for the final published README commit at `pages/deployments/{HEAD}`
+and accepts only `succeed`. The legacy `builds/latest` status can report a
+canceled duplicate build even when deployment succeeds, so it is not used
+as completion evidence. Missing deployments are polled; terminal deployment
+failures and a five-minute timeout fail the job. This check also runs after
+unchanged input, so a manual rerun can recover a previously failed Pages build
+without another data commit.
 
 The schedule runs on the default branch and may be delayed by GitHub's queue.
 GitHub may disable scheduled workflows in public repositories after 60 days
@@ -44,7 +48,8 @@ without repository activity; re-enable it under Actions if that happens.
 
 References: [scheduled workflow behavior](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule),
 [bot token behavior](https://docs.github.com/en/actions/concepts/security/github_token),
-and [Pages build API](https://docs.github.com/en/rest/pages/pages#request-a-github-pages-build).
+and [Pages build API](https://docs.github.com/en/rest/pages/pages#request-a-github-pages-build),
+[exact Pages deployment status](https://docs.github.com/en/rest/pages/pages#get-the-status-of-a-github-pages-deployment).
 
 Run the publisher's offline integration tests locally with:
 

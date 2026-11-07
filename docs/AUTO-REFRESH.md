@@ -12,6 +12,11 @@ Public API requests also use that token to avoid shared anonymous rate limits;
 the public HTML contribution calendar receives no token. Repository pages are
 paginated and checked for completeness, duplicate IDs and private entries.
 The footer shows the actual fetch time in UTC+7; `fetched_at` in the JSON is UTC.
+The same run refreshes Latest shipped from published stable releases of
+UmiBridge, QuietShare and Background Automation Studio. It selects the most
+recent publication per project, keeps separate release links and omits projects
+without a published stable release. Failed sources stop publication instead of
+silently removing existing data. Source responses remain in ignored QA output.
 
 The publisher refuses dirty checkouts and branches other than `main`. It
 fetches public data, renders SVGs, builds the offline HTML, and runs metric,

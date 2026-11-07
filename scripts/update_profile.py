@@ -107,13 +107,15 @@ def main():
     raw_repos = json.dumps(repos, indent=2)
     calendar = Calendar()
     raw_calendar = fetch(f'https://github.com/users/{USER}/contributions')
-    fetched_at = datetime.now(timezone.utc).replace(microsecond=0)
-    local_time = fetched_at.astimezone(VIETNAM)
-    today = date.fromisoformat(args.date) if args.date else local_time.date()
     review = ROOT / 'output' / 'analytics-review'
     review.mkdir(parents=True, exist_ok=True)
     for name, payload in [('profile-source.json', raw_profile), ('repos-source.json', raw_repos), ('calendar-source.html', raw_calendar)]:
         (review / name).write_text(payload, encoding='utf-8')
+    from release_summary import latest_releases
+    releases = latest_releases(fetch, review)
+    fetched_at = datetime.now(timezone.utc).replace(microsecond=0)
+    local_time = fetched_at.astimezone(VIETNAM)
+    today = date.fromisoformat(args.date) if args.date else local_time.date()
     calendar.feed(raw_calendar)
     days = calendar.result(today)
     languages = list(dict.fromkeys(repo['language'] for repo in repos if not repo['fork'] and repo['language']))
@@ -123,6 +125,8 @@ def main():
     recent = [day for day in days if date.fromisoformat(day['date']) >= today - timedelta(days=29)]
     data = {'login': USER, 'date': today.isoformat(), 'date_label': label(today), 'public_repos': profile['public_repos'], 'stars': sum(repo['stargazers_count'] for repo in repos), 'languages': languages, 'language_counts': counts, 'active_days': len(active), 'recent_contributions': sum(day['count'] for day in recent), 'best_day': max(day['count'] for day in days), 'contribution_total': sum(day['count'] for day in days), 'contributions': days, 'projects': [{k: repo[k] for k in ['name', 'html_url', 'language', 'description', 'stargazers_count', 'updated_at']} for name in selected for repo in repos if repo['name'] == name], 'sources': [f'https://api.github.com/users/{USER}', f'https://api.github.com/users/{USER}/repos', f'https://github.com/users/{USER}/contributions']}
     data['fetched_at'] = fetched_at.isoformat().replace('+00:00', 'Z')
+    data['latest_releases'] = releases
+    data['sources'].extend(f'https://api.github.com/repos/{USER}/{repo}/releases' for repo in selected)
     data['updated_label'] = label(local_time.date()) + local_time.strftime(' / %H:%M UTC+7')
     for project in data['projects']:
         repo = next(repo for repo in repos if repo['name'] == project['name'])

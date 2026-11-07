@@ -8,6 +8,8 @@ This repository builds the GitHub profile README and its self-contained artwork.
 | --- | --- |
 | [hero.py](../scripts/native_profile/hero.py) | Owner monogram, headline, original Nyan and planet scene |
 | [projects.py](../scripts/native_profile/projects.py) | Three project compositions, purposes and capability rails |
+| [marks.py](../scripts/native_profile/marks.py) | Related TD terminal, page and replay pixel maker seals |
+| [shipped.py](../scripts/native_profile/shipped.py) | Latest published release ledger, fitted desktop/mobile rows |
 | [activity.py](../scripts/native_profile/activity.py) | Flame placement, dated calendar, active-date orbit and summaries |
 | [analytics.py](../scripts/native_profile/analytics.py) | Monthly bars, weekday averages, repository comparison and active-date share |
 | [details.py](../scripts/native_profile/details.py) | Language distribution and footer actions |
@@ -42,7 +44,9 @@ Daily publication is defined in `.github/workflows/refresh-profile.yml`.
 `scripts/refresh_pages.py` verifies the corresponding Pages build.
 See [Automatic refresh](AUTO-REFRESH.md) for the schedule and manual run steps.
 
-[profile_metrics.py](../scripts/profile_metrics.py) derives the chart data. It preserves zero-count dates, flags incomplete calendar months and divides weekday totals by their observed date counts. Run `python scripts/test_profile_metrics.py` to check date boundaries and reconciliations. Repository metadata comes from the unauthenticated public API; the calendar contains publicly displayed contribution totals.
+`scripts/release_summary.py` fetches published stable releases for the three featured public repositories and derives short source-backed English excerpts. Drafts and prereleases are excluded; a project without a published stable release is omitted. Publication time determines which release is shown. `scripts/site_sections.py` builds the matching static companion-page ledger. Reusable standalone maker seals are `assets/mark-bridge.svg`, `assets/mark-quietshare.svg`, and `assets/mark-automation.svg`.
+
+[profile_metrics.py](../scripts/profile_metrics.py) derives the chart data. It preserves zero-count dates, flags incomplete calendar months and divides weekday totals by their observed date counts. Run `python scripts/test_profile_metrics.py` to check date boundaries and reconciliations. Repository metadata comes from public API endpoints; the calendar contains publicly displayed contribution totals.
 
 Use `python scripts/update_profile.py --data-only` to refresh the inputs without rendering. `--date YYYY-MM-DD` selects the snapshot cutoff. Raw public responses are retained under the ignored `output/analytics-review` directory for verification.
 

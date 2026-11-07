@@ -2,12 +2,18 @@
 from pathlib import Path
 import base64
 import hashlib
+import json
 import re
+from site_sections import latest_shipped
 
 ROOT = Path(__file__).resolve().parents[1]
 MIME = {'gif': 'image/gif', 'png': 'image/png', 'svg': 'image/svg+xml', 'woff2': 'font/woff2'}
 assets = {}
 html = (ROOT / 'index.html').read_text(encoding='utf-8')
+snapshot = json.loads((ROOT / 'assets/profile-data.json').read_text(encoding='utf-8'))
+html = re.sub(r'<!-- latest-shipped:start -->.*?<!-- latest-shipped:end -->',
+              lambda match: '<!-- latest-shipped:start -->'+latest_shipped(snapshot)+'<!-- latest-shipped:end -->',
+              html, flags=re.S)
 css = (ROOT / 'styles.css').read_text(encoding='utf-8')
 script = (ROOT / 'profile.js').read_text(encoding='utf-8')
 # Package only assets used by the website; native README SVGs already embed art.

@@ -18,6 +18,13 @@ def render(data, asset_ref='main'):
     readme = picture('profile-hero', 'TDUmii. Code, cats and side quests.') + '\n\n'
     readme += '<table><tr><td width="50%" valign="top">' + link('https://github.com/TDUmii/umi-bridge', 'project-row-bridge', 'UmiBridge: ChatGPT meets Windows. Open repository.') + '</td><td width="50%" valign="top">' + link('https://github.com/TDUmii/QuietShare', 'project-row-quietshare', 'QuietShare: presentations, notes, optional offline transcription. Open repository.') + '</td></tr></table>\n\n'
     readme += link('https://github.com/TDUmii/BackgroundAutomationStudio', 'project-row-automation', 'Background Automation Studio: record, edit and replay Windows workflows. Open repository.') + '\n\n'
+    if data.get('latest_releases'):
+        from .shipped import MARKS
+        readme += '<p>' + picture('shipped-heading', 'Latest shipped')
+        for release in data['latest_releases']:
+            alt = release['name']+' '+release['version']+'. '+release['date_label']+'. '+release.get('highlight', '')+' Open release.'
+            readme += '<br />' + link(release['html_url'], 'shipped-'+MARKS[release['repo']], alt)
+        readme += '</p>\n\n'
     readme += picture('activity', 'Publicly displayed GitHub contributions. Latest 26 weeks on mobile; dated full-window totals.') + '\n\n'
     readme += picture('insights-rhythm', 'Monthly contributions with partial-month markers, and average contributions per observed weekday.') + '\n\n'
     readme += picture('insights-projects', 'Three featured repository statistics and the share of observed dates with contributions.') + '\n\n'

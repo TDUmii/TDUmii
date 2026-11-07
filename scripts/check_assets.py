@@ -18,7 +18,8 @@ assert sum(day['count'] for day in data['contributions']) == data['contribution_
 assert sum(day['count'] > 0 for day in data['contributions']) == data['active_days']
 
 readme = (ROOT / 'README.md').read_text(encoding='utf-8')
-assert readme.count('<picture>') == 11
+releases = data.get('latest_releases', [])
+assert readme.count('<picture>') == 11 + (1+len(releases) if releases else 0)
 for repo in ['umi-bridge', 'QuietShare', 'BackgroundAutomationStudio']:
     assert readme.count('href="https://github.com/TDUmii/' + repo + '"') == 1
 assert 'aoe' not in readme.lower()
@@ -95,3 +96,18 @@ for sprite in motion['sprites']:
     assert tree.findall('.//svg:animateTransform', NS) or tree.findall('.//svg:animate', NS), 'Missing internal sprite motion'
     assert 'prefers-reduced-motion:reduce' in path.read_text(encoding='utf-8')
 print('PASS: three internal sprite rigs, unchanged PNG payloads and native reduced-motion stills.')
+
+# Every release remains a separate real destination in both editions.
+from native_profile.shipped import MARKS
+website = (ROOT / 'index.html').read_text(encoding='utf-8')
+for release in releases:
+    url = release['html_url']
+    assert readme.count('href="'+url+'"') == 1
+    assert website.count('href="'+url+'"') == 1
+    for suffix in ('', '-mobile'):
+        tree = roots['shipped-'+MARKS[release['repo']]+suffix+'.svg']
+        content = ' '.join(node.text or '' for node in tree.findall('.//svg:text', NS))
+        assert release['version'] in content and release['date_label'] in content
+for kind in ('bridge', 'quietshare', 'automation'):
+    ET.parse(ASSETS / ('mark-'+kind+'.svg'))
+print('PASS: published release versions/dates and three independent release links match both editions.')

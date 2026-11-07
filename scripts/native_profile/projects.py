@@ -1,5 +1,6 @@
 """Three independently linked project scenes for GitHub's native two-cell layout."""
 from .core import BG, GOLD, INK, MINT, arrow, image_asset, rect, text, write
+from .marks import maker_mark
 from .ornaments import automation_ending, bridge_dialogue, bridge_ending, conveyor_pixels, paper_glint, projection_scene, slide_ending, star, workflow_icon_action, workflow_marker
 
 
@@ -16,6 +17,7 @@ def project_panel(slug, mobile):
     else:
         body += f'<path d="M1 17h27L42 1H{width-1}V{height-1}H1Z" fill="none" stroke="{INK}" stroke-width="2"/>'
     body += arrow(width-45, 30, size=23)
+    body += maker_mark('bridge' if bridge else 'quietshare', width-27 if mobile else width-31, 3, 20 if mobile else 24)
     title = 'UmiBridge' if bridge else 'QuietShare'
     body += text(17 if mobile else 25, 58 if mobile else 72, title, 33 if mobile else 49, INK, 800)
     if mobile:
@@ -78,6 +80,7 @@ def render(data):
                   ('UmiBridge. ChatGPT meets Windows.' if slug == 'bridge' else 'QuietShare. Presentations, notes and optional offline transcription.')+' Open repository.')
         width, height = (500, 360) if mobile else (1000, 270)
         body = rect(0, 0, width, height, INK, 0)
+        body += maker_mark('automation', width-31, 5, 24)
         if mobile:
             body += text(22, 52, 'Background', 40, BG, 800)
             body += text(22, 97, 'Automation Studio', 38, BG, 800)

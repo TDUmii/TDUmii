@@ -1919,10 +1919,45 @@
   "sources": [
     "https://api.github.com/users/TDUmii",
     "https://api.github.com/users/TDUmii/repos",
-    "https://github.com/users/TDUmii/contributions"
+    "https://github.com/users/TDUmii/contributions",
+    "https://api.github.com/repos/TDUmii/umi-bridge/releases",
+    "https://api.github.com/repos/TDUmii/QuietShare/releases",
+    "https://api.github.com/repos/TDUmii/BackgroundAutomationStudio/releases"
   ],
-  "fetched_at": "2026-11-07T02:17:41Z",
-  "updated_label": "Nov 7, 2026 / 09:17 UTC+7",
+  "fetched_at": "2026-11-07T05:36:25Z",
+  "latest_releases": [
+    {
+      "repo": "QuietShare",
+      "name": "QuietShare",
+      "tag": "v0.20.0",
+      "version": "v0.20.0",
+      "html_url": "https://github.com/TDUmii/QuietShare/releases/tag/v0.20.0",
+      "published_at": "2026-11-05T01:13:09Z",
+      "date_label": "Nov 5, 2026",
+      "highlight": "PDF thumbnails, bookmarks and go-to-page."
+    },
+    {
+      "repo": "umi-bridge",
+      "name": "UmiBridge",
+      "tag": "v1.16.0",
+      "version": "v1.16.0",
+      "html_url": "https://github.com/TDUmii/umi-bridge/releases/tag/v1.16.0",
+      "published_at": "2026-11-04T12:18:39Z",
+      "date_label": "Nov 4, 2026",
+      "highlight": "Calendar heatmap of requests by local day."
+    },
+    {
+      "repo": "BackgroundAutomationStudio",
+      "name": "Background Automation Studio",
+      "tag": "v2.6.1",
+      "version": "v2.6.1",
+      "html_url": "https://github.com/TDUmii/BackgroundAutomationStudio/releases/tag/v2.6.1",
+      "published_at": "2026-09-23T02:33:14Z",
+      "date_label": "Sep 23, 2026",
+      "highlight": "Avoid extra workflow expansion with overlay off."
+    }
+  ],
+  "updated_label": "Nov 7, 2026 / 12:36 UTC+7",
   "repo_summary": {
     "original": 14,
     "fork": 0,

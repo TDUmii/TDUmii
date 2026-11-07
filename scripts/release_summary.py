@@ -15,7 +15,7 @@ AUDITED = {
         'Calendar heatmap of requests by local day.'),
     ('QuietShare', 'v0.20.0'): (
         'Add on-demand PDF thumbnails, bookmarks and go-to-page.',
-        'PDF thumbnails, bookmarks and go-to-page.'),
+        'On-demand PDF thumbnails.'),
     ('BackgroundAutomationStudio', 'v2.6.1'): (
         'Avoids unnecessary workflow expansion when the coordinate overlay is disabled.',
         'Avoid extra workflow expansion with overlay off.'),

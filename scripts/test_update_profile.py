@@ -76,7 +76,7 @@ class PublicReleaseTests(unittest.TestCase):
         text = highlight('umi-bridge', 'unknown', '- Add ' + 'documented '*30 + 'features.')
         self.assertLessEqual(len(text), 82)
         self.assertTrue(text.endswith('...'))
-        self.assertEqual(highlight('umi-bridge', 'unknown', '## What is new\n- Amazing ultimate tool.\n- Thêm tính năng.'), '')
+        self.assertEqual(highlight('umi-bridge', 'unknown', '## What is new\n- Amazing ultimate tool.\n- ThÃªm tÃ­nh nÄƒng.'), '')
         self.assertEqual(highlight('umi-bridge', 'unknown', '## Changes\\n- Fix local export.'), 'Fix local export.')
 
     def test_audited_excerpt_must_still_exist_in_exact_tag_notes(self):
@@ -87,7 +87,7 @@ class PublicReleaseTests(unittest.TestCase):
         self.assertEqual(highlight('umi-bridge', 'another-tag', '- '+excerpt), '')
         self.assertEqual(highlight('QuietShare', 'v0.20.0',
                                    '- Add on-demand PDF thumbnails, bookmarks and go-to-page.'),
-                         'PDF thumbnails, bookmarks and go-to-page.')
+                         'On-demand PDF thumbnails.')
         self.assertEqual(highlight('BackgroundAutomationStudio', 'v2.6.1',
                                    '- Avoids unnecessary workflow expansion when the coordinate overlay is disabled.'),
                          'Avoid extra workflow expansion with overlay off.')

@@ -44,7 +44,7 @@ Daily publication is defined in `.github/workflows/refresh-profile.yml`.
 `scripts/refresh_pages.py` verifies the corresponding Pages build.
 See [Automatic refresh](AUTO-REFRESH.md) for the schedule and manual run steps.
 
-`scripts/release_summary.py` fetches published stable releases for the three featured public repositories and derives short source-backed English excerpts. Drafts and prereleases are excluded; a project without a published stable release is omitted. Publication time determines which release is shown. `scripts/site_sections.py` builds the matching static companion-page ledger. Reusable standalone maker seals are `assets/mark-bridge.svg`, `assets/mark-quietshare.svg`, and `assets/mark-automation.svg`.
+`scripts/release_summary.py` fetches published stable releases for the three featured public repositories and derives short source-backed English summaries. Drafts and prereleases are excluded; a project without a published stable release is omitted. Publication time determines which release is shown. `scripts/site_sections.py` builds the matching static companion-page ledger. Reusable standalone maker seals are `assets/mark-bridge.svg`, `assets/mark-quietshare.svg`, and `assets/mark-automation.svg`.
 
 [profile_metrics.py](../scripts/profile_metrics.py) derives the chart data. It preserves zero-count dates, flags incomplete calendar months and divides weekday totals by their observed date counts. Run `python scripts/test_profile_metrics.py` to check date boundaries and reconciliations. Repository metadata comes from public API endpoints; the calendar contains publicly displayed contribution totals.
 

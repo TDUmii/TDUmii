@@ -3,7 +3,7 @@ const embedded=window.UMI_ASSETS||{};
 if(data){
  const stats={repos:data.public_repos,stars:data.stars,languages:data.languages.length,contributions:data.contribution_total,activeDays:data.active_days,recent:data.recent_contributions,bestDay:data.best_day};
  document.querySelectorAll('[data-stat]').forEach(node=>node.textContent=stats[node.dataset.stat].toLocaleString('en-US'));
- document.getElementById('snapshot-date').textContent='Public GitHub data · '+data.date_label;
+ document.getElementById('snapshot-date').textContent=data.updated_label?'Updated '+data.updated_label:'Public GitHub data · '+data.date_label;
  const colors=['#3f7346','#506e85','#8c682b','#82687d','#52746d','#9c6b42'];
  const rows=Object.entries(data.language_counts).sort((a,b)=>b[1]-a[1]);
  const max=Math.max(...rows.map(x=>x[1]));

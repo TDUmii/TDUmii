@@ -1,0 +1,49 @@
+name: Refresh public profile
+
+on:
+  schedule:
+    # 07:17 Asia/Ho_Chi_Minh (UTC+7).
+    - cron: '17 0 * * *'
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: refresh-public-profile
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    if: github.ref == 'refs/heads/main' && github.event.repository.default_branch == 'main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pages: write
+    steps:
+      - name: Check out main with full commit history
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: true
+      - name: Set up Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.12'
+      - name: Test publication safeguards without network access
+        run: |
+          python scripts/test_refresh_profile.py
+          python scripts/test_refresh_pages.py
+          python scripts/test_update_profile.py
+      - name: Fetch, render, validate and publish public snapshot
+        id: refresh
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python scripts/refresh_profile.py
+      # Bot pushes do not trigger legacy branch-based Pages builds. Also runs
+      # after a no-op so rerunning can recover a previously failed Pages build.
+      - name: Refresh GitHub Pages and verify the published commit
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python scripts/refresh_pages.py

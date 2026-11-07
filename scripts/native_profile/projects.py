@@ -1,6 +1,6 @@
 """Three independently linked project scenes for GitHub's native two-cell layout."""
 from .core import BG, GOLD, INK, MINT, arrow, image_asset, rect, text, write
-from .ornaments import bridge_dialogue, conveyor_pixels, paper_glint, projection_scene, star, workflow_icon_action, workflow_marker
+from .ornaments import automation_ending, bridge_dialogue, bridge_ending, conveyor_pixels, paper_glint, projection_scene, slide_ending, star, workflow_icon_action, workflow_marker
 
 
 def scene_shelf(width, y, color=INK):
@@ -37,6 +37,9 @@ def project_panel(slug, mobile):
     body += image_asset('c1-bridge-art.png' if bridge else 'c1-quiet-art.png', art_x, art_y, art_w, art_h, True)
     if not bridge:
         body += paper_glint(155 if mobile else 295, 207 if mobile else 251, .8 if mobile else 1.15)
+        body += slide_ending(18 if mobile else 64, 151 if mobile else 174, .65 if mobile else 1.35)
+    else:
+        body += bridge_ending(99 if mobile else 187, 156 if mobile else 195, .8 if mobile else 1)
     body += f'<path d="M17 {footer_y-19}H{width-17}" stroke="{INK}" stroke-width="1"/>'
     if mobile:
         lines = ['Local dashboard', 'One-click setup'] if bridge else ['Optional offline', 'transcription']
@@ -80,6 +83,7 @@ def render(data):
             body += text(22, 97, 'Automation Studio', 38, BG, 800)
             body += workflow(25, 144, True)
             body += image_asset('c1-automation-art.png', 230, 178, 263, 169, True)
+            body += automation_ending(454, 201, .9)
             body += text(25, 252, 'Windows', 23, MINT, 500)+text(25, 282, 'workflows.', 23, MINT, 500)
             body += arrow(27, 324, BG, 30)
         else:
@@ -89,6 +93,7 @@ def render(data):
             body += text(448, 178, 'Windows workflows.', 22, MINT, 500)
             body += arrow(450, 216, BG)
             body += image_asset('c1-automation-art.png', 735, 36, 260, 210, True)
+            body += automation_ending(953, 72)
         body += f'<path d="M{180 if mobile else 400} {height}l22-22H{width}v22Z" fill="{GOLD}"/>'
         body += conveyor_pixels(249 if mobile else 468, height-13, 80 if mobile else 174)
         write('project-row-automation'+('-mobile' if mobile else '')+'.svg', width, height, body,

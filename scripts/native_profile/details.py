@@ -11,7 +11,7 @@ def footer_companion(x):
 
 
 def render(data):
-    counts = sorted(data['language_counts'].items(), key=lambda item: -item[1])
+    counts = sorted(data['language_counts'].items(), key=lambda item: (-item[1], item[0]))
     total = sum(count for _, count in counts)
     colors = [MINT, GOLD, BLUE, '#d3d4bf', '#b3c89f', '#b4b8b0']
     for mobile in (False, True):
@@ -44,7 +44,8 @@ def render(data):
     for mobile in (False, True):
         w, h = (500, 90) if mobile else (1000, 56)
         credit = text(22, 33, 'Nyan Cat via GIPHY', 19 if mobile else 15, INK)
-        credit += text(22 if mobile else 625, 70 if mobile else 33, 'Public snapshot / '+data['date_label'], 17 if mobile else 14, MUTED)
+        update = 'Updated '+data['updated_label'] if data.get('updated_label') else 'Public snapshot / '+data['date_label']
+        credit += text(22 if mobile else 595, 70 if mobile else 33, update, 17 if mobile else 14, MUTED)
         credit += footer_companion(w-55)
-        write('footer-credit'+('-mobile' if mobile else '')+'.svg', w, h, credit, 'Original Nyan Cat via GIPHY. Public snapshot: '+data['date_label'])
+        write('footer-credit'+('-mobile' if mobile else '')+'.svg', w, h, credit, 'Original Nyan Cat via GIPHY. '+update)
 

@@ -37,6 +37,11 @@ python scripts/check_assets.py
 
 `assets/profile-data.json` is the dated public-data input. Generated SVGs and README are committed so GitHub can render them directly. Edit the modules and rebuild instead of editing the large base64 SVG outputs.
 
+Daily publication is defined in `.github/workflows/refresh-profile.yml`.
+`scripts/refresh_profile.py` validates and atomically publishes the snapshot;
+`scripts/refresh_pages.py` verifies the corresponding Pages build.
+See [Automatic refresh](AUTO-REFRESH.md) for the schedule and manual run steps.
+
 [profile_metrics.py](../scripts/profile_metrics.py) derives the chart data. It preserves zero-count dates, flags incomplete calendar months and divides weekday totals by their observed date counts. Run `python scripts/test_profile_metrics.py` to check date boundaries and reconciliations. Repository metadata comes from the unauthenticated public API; the calendar contains publicly displayed contribution totals.
 
 Use `python scripts/update_profile.py --data-only` to refresh the inputs without rendering. `--date YYYY-MM-DD` selects the snapshot cutoff. Raw public responses are retained under the ignored `output/analytics-review` directory for verification.

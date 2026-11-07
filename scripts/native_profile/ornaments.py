@@ -125,12 +125,13 @@ def bridge_dialogue(outbound_path, return_path, robot_x, robot_y,
 def projection_scene(x, y, scale=1):
     """Local screen 0,0..100,68; presenter beam originates at 145,92.
 
-    Insert before the presenter PNG. Scene runs 2.8..4.9s of a 7s loop.
+    Insert before the presenter PNG. The beam stops at 4.9s; the completed
+    screen stays through its folded-corner ending at 5.7s of a 7s loop.
     """
-    blocks = ''.join(f'''<rect x="{12+i*26}" y="20" width="18" height="22" fill="{AMBER}" opacity="0">{_opacity(3+i*.2, 4.9, 7)}</rect>''' for i in range(3))
+    blocks = ''.join(f'''<rect x="{12+i*26}" y="20" width="18" height="22" fill="{AMBER}" opacity="0">{_opacity(3+i*.2, 5.7, 7)}</rect>''' for i in range(3))
     return f'''<g class="moving" aria-hidden="true" pointer-events="none" transform="translate({x:g} {y:g}) scale({scale:g})">
 <path d="M145 92L100 0V68Z" fill="{MINT}" opacity="0">{_opacity(2.8, 4.9, 7, .18)}</path>
-<g opacity="0">{_opacity(2.8, 4.9, 7)}
+<g opacity="0">{_opacity(2.8, 5.7, 7)}
 <rect width="100" height="68" fill="#f0ebe1" stroke="{INK}" stroke-width="2"/>
 <rect x="8" y="8" width="84" height="4" fill="{INK}" opacity=".25"/>
 {blocks}<path d="M12 53H88" stroke="{INK}" stroke-width="2" opacity=".2"/>
@@ -160,3 +161,47 @@ def bar_glint(x, y, width, height):
 <rect x="{-stripe:g}" width="{stripe:g}" height="{height:g}" fill="{INK}" opacity="0">{_opacity(.01, 2, 10, .18)}
 <animate attributeName="x" values="{-stripe:g};{width:g};{width:g}" keyTimes="0;.2;1" dur="10s" repeatCount="indefinite"/>
 </rect></svg>'''
+
+
+def bridge_ending(x, y, scale=1):
+    """A small checked reply bubble, 3.4..4.2s of the 6.8s dialogue.
+
+    x/y is the bubble's top-left corner; bounds are 30 by 27 local units.
+    """
+    return f'''<g class="moving" aria-hidden="true" pointer-events="none" transform="translate({x:g} {y:g}) scale({scale:g})" opacity="0">
+{_opacity(3.4, 4.2, 6.8)}
+<path d="M0 0H30V21H13L7 27V21H0Z" fill="#f0ebe1" stroke="{INK}" stroke-width="2"/>
+<path d="M8 10L13 15L23 6" fill="none" stroke="{INK}" stroke-width="3" stroke-linejoin="miter"/>
+</g>'''
+
+
+def slide_ending(x, y, scale=1):
+    """A completed slide's folded corner, 5.0..5.7s of the 7s reading loop.
+
+    x/y and scale match projection_scene; cue occupies its upper-right corner.
+    """
+    return f'''<g class="moving" aria-hidden="true" pointer-events="none" transform="translate({x:g} {y:g}) scale({scale:g})" opacity="0">
+{_opacity(5, 5.7, 7)}
+<path d="M70 0H92L100 8V28H70Z" fill="#f0ebe1" stroke="{INK}" stroke-width="2"/>
+<path d="M92 0V8H100" fill="{AMBER}" stroke="{INK}" stroke-width="2"/>
+<path d="M76 15H88M76 20H91" fill="none" stroke="{INK}" stroke-width="2" opacity=".55"/>
+<rect x="93" y="19" width="5" height="5" fill="{AMBER}"/>
+</g>'''
+
+
+def automation_ending(x, y, scale=1):
+    """A drawn check and three pixel sparks, 4.6..5.6s of an 8s loop.
+
+    x/y centers the check; all geometry stays within a 40-by-32 local box.
+    """
+    sparks = ''.join(f'''<rect x="{px}" y="{py}" width="3" height="3" fill="{color}" opacity="0">{_opacity(start, 5.6, 8)}
+<animateTransform attributeName="transform" type="translate" values="0 0;0 0;{dx} {dy};{dx} {dy}" keyTimes="0;.625;.675;1" dur="8s" repeatCount="indefinite"/></rect>'''
+                      for px, py, dx, dy, color, start in
+                      ((-14, -8, -3, -3, MINT, 5.0),
+                       (8, -13, 2, -3, AMBER, 5.08),
+                       (14, 3, 3, 1, MINT, 5.16)))
+    return f'''<g class="moving" aria-hidden="true" pointer-events="none" transform="translate({x:g} {y:g}) scale({scale:g})" opacity="0">
+{_opacity(4.6, 5.6, 8)}
+<path d="M-10 1L-3 8L10-7" fill="none" stroke="{MINT}" stroke-width="3" stroke-linejoin="miter" stroke-dasharray="32" stroke-dashoffset="32">
+<animate attributeName="stroke-dashoffset" values="32;32;0;0" keyTimes="0;.575;.625;1" dur="8s" repeatCount="indefinite"/>
+</path>{sparks}</g>'''

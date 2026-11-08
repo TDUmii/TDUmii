@@ -1,8 +1,8 @@
 {
   "login": "TDUmii",
-  "date": "2026-11-07",
-  "date_label": "Nov 7, 2026",
-  "public_repos": 14,
+  "date": "2026-11-08",
+  "date_label": "Nov 8, 2026",
+  "public_repos": 17,
   "stars": 5,
   "languages": [
     "Python",
@@ -14,52 +14,17 @@
   ],
   "language_counts": {
     "Python": 3,
-    "JavaScript": 2,
+    "JavaScript": 4,
     "C#": 5,
     "C++": 2,
-    "TypeScript": 1,
+    "TypeScript": 2,
     "HTML": 1
   },
-  "active_days": 58,
-  "recent_contributions": 253,
+  "active_days": 59,
+  "recent_contributions": 269,
   "best_day": 51,
-  "contribution_total": 497,
+  "contribution_total": 514,
   "contributions": [
-    {
-      "date": "2025-11-02",
-      "level": 0,
-      "count": 0
-    },
-    {
-      "date": "2025-11-03",
-      "level": 0,
-      "count": 0
-    },
-    {
-      "date": "2025-11-04",
-      "level": 0,
-      "count": 0
-    },
-    {
-      "date": "2025-11-05",
-      "level": 0,
-      "count": 0
-    },
-    {
-      "date": "2025-11-06",
-      "level": 0,
-      "count": 0
-    },
-    {
-      "date": "2025-11-07",
-      "level": 0,
-      "count": 0
-    },
-    {
-      "date": "2025-11-08",
-      "level": 0,
-      "count": 0
-    },
     {
       "date": "2025-11-09",
       "level": 0,
@@ -1877,8 +1842,13 @@
     },
     {
       "date": "2026-11-07",
+      "level": 2,
+      "count": 16
+    },
+    {
+      "date": "2026-11-08",
       "level": 1,
-      "count": 7
+      "count": 8
     }
   ],
   "projects": [
@@ -1899,9 +1869,9 @@
       "language": "C++",
       "description": null,
       "stargazers_count": 0,
-      "updated_at": "2026-11-05T01:12:56Z",
+      "updated_at": "2026-11-08T02:45:05Z",
       "forks_count": 0,
-      "pushed_at": "2026-11-05T01:12:53Z",
+      "pushed_at": "2026-11-08T02:45:03Z",
       "archived": false
     },
     {
@@ -1924,17 +1894,17 @@
     "https://api.github.com/repos/TDUmii/QuietShare/releases",
     "https://api.github.com/repos/TDUmii/BackgroundAutomationStudio/releases"
   ],
-  "fetched_at": "2026-11-07T05:43:31Z",
+  "fetched_at": "2026-11-08T06:06:56Z",
   "latest_releases": [
     {
       "repo": "QuietShare",
       "name": "QuietShare",
-      "tag": "v0.20.0",
-      "version": "v0.20.0",
-      "html_url": "https://github.com/TDUmii/QuietShare/releases/tag/v0.20.0",
-      "published_at": "2026-11-05T01:13:09Z",
-      "date_label": "Nov 5, 2026",
-      "highlight": "On-demand PDF thumbnails."
+      "tag": "v0.23.0",
+      "version": "v0.23.0",
+      "html_url": "https://github.com/TDUmii/QuietShare/releases/tag/v0.23.0",
+      "published_at": "2026-11-08T02:45:30Z",
+      "date_label": "Nov 8, 2026",
+      "highlight": "Add Browser overflow > Deep sleep background tabs to release eligible..."
     },
     {
       "repo": "umi-bridge",
@@ -1957,9 +1927,9 @@
       "highlight": "Avoid extra workflow expansion with overlay off."
     }
   ],
-  "updated_label": "Nov 7, 2026 / 12:43 UTC+7",
+  "updated_label": "Nov 8, 2026 / 13:06 UTC+7",
   "repo_summary": {
-    "original": 14,
+    "original": 17,
     "fork": 0,
     "archived": 0,
     "total_forks": 0

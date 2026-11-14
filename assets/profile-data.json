@@ -1,7 +1,7 @@
 {
   "login": "TDUmii",
-  "date": "2026-11-13",
-  "date_label": "Nov 13, 2026",
+  "date": "2026-11-14",
+  "date_label": "Nov 14, 2026",
   "public_repos": 20,
   "stars": 5,
   "languages": [
@@ -20,10 +20,10 @@
     "C++": 2,
     "TypeScript": 2
   },
-  "active_days": 64,
-  "recent_contributions": 328,
+  "active_days": 65,
+  "recent_contributions": 337,
   "best_day": 51,
-  "contribution_total": 594,
+  "contribution_total": 605,
   "contributions": [
     {
       "date": "2025-11-09",
@@ -1872,8 +1872,13 @@
     },
     {
       "date": "2026-11-13",
+      "level": 2,
+      "count": 16
+    },
+    {
+      "date": "2026-11-14",
       "level": 1,
-      "count": 8
+      "count": 3
     }
   ],
   "projects": [
@@ -1885,7 +1890,7 @@
       "stargazers_count": 2,
       "updated_at": "2026-11-04T12:18:34Z",
       "forks_count": 0,
-      "pushed_at": "2026-11-04T12:18:34Z",
+      "pushed_at": "2026-11-13T15:37:37Z",
       "archived": false
     },
     {
@@ -1919,8 +1924,18 @@
     "https://api.github.com/repos/TDUmii/QuietShare/releases",
     "https://api.github.com/repos/TDUmii/BackgroundAutomationStudio/releases"
   ],
-  "fetched_at": "2026-11-13T06:49:27Z",
+  "fetched_at": "2026-11-14T06:29:59Z",
   "latest_releases": [
+    {
+      "repo": "umi-bridge",
+      "name": "UmiBridge",
+      "tag": "v1.17.1",
+      "version": "v1.17.1",
+      "html_url": "https://github.com/TDUmii/umi-bridge/releases/tag/v1.17.1",
+      "published_at": "2026-11-13T15:37:42Z",
+      "date_label": "Nov 13, 2026",
+      "highlight": ""
+    },
     {
       "repo": "QuietShare",
       "name": "QuietShare",
@@ -1930,16 +1945,6 @@
       "published_at": "2026-11-08T17:47:22Z",
       "date_label": "Nov 8, 2026",
       "highlight": "Update both PDF manuals and illustrated guides."
-    },
-    {
-      "repo": "umi-bridge",
-      "name": "UmiBridge",
-      "tag": "v1.16.0",
-      "version": "v1.16.0",
-      "html_url": "https://github.com/TDUmii/umi-bridge/releases/tag/v1.16.0",
-      "published_at": "2026-11-04T12:18:39Z",
-      "date_label": "Nov 4, 2026",
-      "highlight": "Calendar heatmap of requests by local day."
     },
     {
       "repo": "BackgroundAutomationStudio",
@@ -1952,7 +1957,7 @@
       "highlight": "Avoid extra workflow expansion with overlay off."
     }
   ],
-  "updated_label": "Nov 13, 2026 / 13:49 UTC+7",
+  "updated_label": "Nov 14, 2026 / 13:29 UTC+7",
   "repo_summary": {
     "original": 20,
     "fork": 0,

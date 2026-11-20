@@ -1,7 +1,7 @@
 {
   "login": "TDUmii",
-  "date": "2026-11-19",
-  "date_label": "Nov 19, 2026",
+  "date": "2026-11-20",
+  "date_label": "Nov 20, 2026",
   "public_repos": 21,
   "stars": 7,
   "languages": [
@@ -21,7 +21,7 @@
     "TypeScript": 2
   },
   "active_days": 69,
-  "recent_contributions": 316,
+  "recent_contributions": 313,
   "best_day": 51,
   "contribution_total": 642,
   "contributions": [
@@ -1869,6 +1869,11 @@
       "date": "2026-11-19",
       "level": 1,
       "count": 1
+    },
+    {
+      "date": "2026-11-20",
+      "level": 0,
+      "count": 0
     }
   ],
   "projects": [
@@ -1880,7 +1885,7 @@
       "stargazers_count": 3,
       "updated_at": "2026-11-18T07:22:31Z",
       "forks_count": 0,
-      "pushed_at": "2026-11-13T15:37:37Z",
+      "pushed_at": "2026-11-20T02:48:49Z",
       "archived": false
     },
     {
@@ -1914,16 +1919,16 @@
     "https://api.github.com/repos/TDUmii/QuietShare/releases",
     "https://api.github.com/repos/TDUmii/BackgroundAutomationStudio/releases"
   ],
-  "fetched_at": "2026-11-19T07:30:03Z",
+  "fetched_at": "2026-11-20T07:21:15Z",
   "latest_releases": [
     {
       "repo": "umi-bridge",
       "name": "UmiBridge",
-      "tag": "v1.17.1",
-      "version": "v1.17.1",
-      "html_url": "https://github.com/TDUmii/umi-bridge/releases/tag/v1.17.1",
-      "published_at": "2026-11-13T15:37:42Z",
-      "date_label": "Nov 13, 2026",
+      "tag": "v1.18.0",
+      "version": "v1.18.0",
+      "html_url": "https://github.com/TDUmii/umi-bridge/releases/tag/v1.18.0",
+      "published_at": "2026-11-20T02:48:54Z",
+      "date_label": "Nov 20, 2026",
       "highlight": ""
     },
     {
@@ -1947,7 +1952,7 @@
       "highlight": "Avoid extra workflow expansion with overlay off."
     }
   ],
-  "updated_label": "Nov 19, 2026 / 14:30 UTC+7",
+  "updated_label": "Nov 20, 2026 / 14:21 UTC+7",
   "repo_summary": {
     "original": 21,
     "fork": 0,

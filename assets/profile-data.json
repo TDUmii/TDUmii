@@ -1,7 +1,7 @@
 {
   "login": "TDUmii",
-  "date": "2026-11-21",
-  "date_label": "Nov 21, 2026",
+  "date": "2026-11-22",
+  "date_label": "Nov 22, 2026",
   "public_repos": 21,
   "stars": 7,
   "languages": [
@@ -20,46 +20,11 @@
     "C++": 2,
     "TypeScript": 2
   },
-  "active_days": 69,
-  "recent_contributions": 294,
+  "active_days": 70,
+  "recent_contributions": 245,
   "best_day": 51,
-  "contribution_total": 642,
+  "contribution_total": 644,
   "contributions": [
-    {
-      "date": "2025-11-16",
-      "level": 0,
-      "count": 0
-    },
-    {
-      "date": "2025-11-17",
-      "level": 0,
-      "count": 0
-    },
-    {
-      "date": "2025-11-18",
-      "level": 0,
-      "count": 0
-    },
-    {
-      "date": "2025-11-19",
-      "level": 0,
-      "count": 0
-    },
-    {
-      "date": "2025-11-20",
-      "level": 0,
-      "count": 0
-    },
-    {
-      "date": "2025-11-21",
-      "level": 0,
-      "count": 0
-    },
-    {
-      "date": "2025-11-22",
-      "level": 0,
-      "count": 0
-    },
     {
       "date": "2025-11-23",
       "level": 0,
@@ -1877,6 +1842,11 @@
     },
     {
       "date": "2026-11-21",
+      "level": 1,
+      "count": 2
+    },
+    {
+      "date": "2026-11-22",
       "level": 0,
       "count": 0
     }
@@ -1901,7 +1871,7 @@
       "stargazers_count": 0,
       "updated_at": "2026-11-08T17:47:18Z",
       "forks_count": 0,
-      "pushed_at": "2026-11-08T17:47:16Z",
+      "pushed_at": "2026-11-21T07:47:32Z",
       "archived": false
     },
     {
@@ -1924,8 +1894,18 @@
     "https://api.github.com/repos/TDUmii/QuietShare/releases",
     "https://api.github.com/repos/TDUmii/BackgroundAutomationStudio/releases"
   ],
-  "fetched_at": "2026-11-21T07:14:04Z",
+  "fetched_at": "2026-11-22T06:54:55Z",
   "latest_releases": [
+    {
+      "repo": "QuietShare",
+      "name": "QuietShare",
+      "tag": "v0.24.1",
+      "version": "v0.24.1",
+      "html_url": "https://github.com/TDUmii/QuietShare/releases/tag/v0.24.1",
+      "published_at": "2026-11-21T07:48:13Z",
+      "date_label": "Nov 21, 2026",
+      "highlight": ""
+    },
     {
       "repo": "umi-bridge",
       "name": "UmiBridge",
@@ -1935,16 +1915,6 @@
       "published_at": "2026-11-20T02:48:54Z",
       "date_label": "Nov 20, 2026",
       "highlight": ""
-    },
-    {
-      "repo": "QuietShare",
-      "name": "QuietShare",
-      "tag": "v0.24.0",
-      "version": "v0.24.0",
-      "html_url": "https://github.com/TDUmii/QuietShare/releases/tag/v0.24.0",
-      "published_at": "2026-11-08T17:47:22Z",
-      "date_label": "Nov 8, 2026",
-      "highlight": "Update both PDF manuals and illustrated guides."
     },
     {
       "repo": "BackgroundAutomationStudio",
@@ -1957,7 +1927,7 @@
       "highlight": "Avoid extra workflow expansion with overlay off."
     }
   ],
-  "updated_label": "Nov 21, 2026 / 14:14 UTC+7",
+  "updated_label": "Nov 22, 2026 / 13:54 UTC+7",
   "repo_summary": {
     "original": 21,
     "fork": 0,
